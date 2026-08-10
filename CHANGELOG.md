@@ -3,6 +3,13 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.6.1] - 2026-08-10
+### Agregado
+- Badge "✓ Revisado [fecha]" en el header de Calendario y Correos
+  importantes, para saber a simple vista cuándo fue la última vez que
+  se chequearon novedades (tareas nuevas, correos importantes) sin
+  tener que preguntar.
+
 ## [1.6.0] - 2026-08-10
 ### Cambiado
 - Rediseño visual completo del tutor, inspirado en referencias de apps
