@@ -3,6 +3,22 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.4.0] - 2026-08-10
+### Agregado
+- Menú central del tutor (`app/inicio.html`): punto de entrada de la app,
+  con una tarjeta por herramienta disponible y espacio para las que se
+  vayan agregando. Renderizado desde un arreglo `HERRAMIENTAS` en JS, para
+  que sumar una herramienta nueva sea solo agregar un objeto ahí.
+- Enlace "← Menú" en el header de `tablas_frecuencia.html` para volver al
+  menú central.
+
+### Cambiado
+- El proyecto pasa de ser una sola app de tablas de frecuencia a un
+  **tutor con varias herramientas**; `tablas_frecuencia.html` ahora es la
+  primera de varias, no la raíz de la app.
+- `index.html` redirige al menú (`app/inicio.html`) en vez de ir directo a
+  la herramienta de tablas de frecuencia.
+
 ## [1.3.0] - 2026-08-10
 ### Agregado
 - Checkbox "eje derecho en %" en barras/histograma: cuando la métrica

@@ -85,6 +85,8 @@
   }
   header h1{font-size:23px;margin:0;font-weight:700;letter-spacing:-.01em;}
   header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
+  .menu-link{display:inline-block;font-size:12.5px;font-weight:600;color:var(--ink-secondary);text-decoration:none;margin-bottom:6px;}
+  .menu-link:hover{color:var(--accent);}
   .header-right{display:flex;align-items:center;gap:10px;}
   .badge{
     background:var(--accent-soft-bg);
@@ -293,11 +295,12 @@
 
   <header>
     <div>
+      <a class="menu-link" href="inicio.html">← Menú</a>
       <h1>📊 Tablas de Frecuencia</h1>
       <p>Probabilidad y Estadística · 4to semestre</p>
     </div>
     <div class="header-right">
-      <span class="badge">v1.3.0</span>
+      <span class="badge">v1.4.0</span>
       <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
     </div>
   </header>

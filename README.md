@@ -1,14 +1,17 @@
-# Tablas de Frecuencia — Probabilidad y Estadística
+# Tutor — Probabilidad y Estadística
 
-**Versión:** 1.0.1
+**Versión:** 1.4.0
 **Materia:** Probabilidad y Estadística — 4to semestre
 **Estado:** en desarrollo activo (el profesor aún no publicó el temario formal)
 
-Proyecto personal con dos herramientas para la clase: una app web para generar
-tablas de frecuencia con sus gráficas, y una plantilla LaTeX para redactar los
-informes de entrega. También funciona como **plantilla de formato**: la
-estructura de carpetas y el esquema de versionado de acá se repiten en los
-próximos proyectos de la carpeta `03_Proyectos_Personales`.
+Proyecto personal que arrancó como una sola app de tablas de frecuencia y se
+está convirtiendo en un **tutor con varias herramientas** para la clase,
+todas accesibles desde un menú central (`app/inicio.html`). Cada herramienta
+es un HTML independiente que se agrega al menú a medida que se construye.
+También incluye una plantilla LaTeX para redactar los informes de entrega, y
+funciona como **plantilla de formato**: la estructura de carpetas y el
+esquema de versionado de acá se repiten en los próximos proyectos de la
+carpeta `03_Proyectos_Personales`.
 
 ## Estructura
 
@@ -18,7 +21,8 @@ TablasFrecuencia_ProbEstadistica/
 ├── CHANGELOG.md            historial de versiones
 ├── VERSION                 versión actual en texto plano
 ├── app/
-│   └── tablas_frecuencia.html   app de tablas de frecuencia (abrir con doble clic)
+│   ├── inicio.html              menú central del tutor (abrir con doble clic)
+│   └── tablas_frecuencia.html   herramienta: tablas de frecuencia
 ├── latex/
 │   ├── plantilla_informe.tex    plantilla para informes de entrega
 │   ├── README.md                cómo compilarla
@@ -28,9 +32,16 @@ TablasFrecuencia_ProbEstadistica/
     └── (temario, consignas y materiales de la clase cuando el profesor los publique)
 ```
 
-## App de tablas de frecuencia (`app/`)
+## Menú del tutor (`app/inicio.html`)
 
-Abrí `tablas_frecuencia.html` con doble clic (necesita internet solo para
+Punto de entrada de la app. Muestra una tarjeta por cada herramienta
+disponible (o "Próximamente" para las que faltan). Para agregar una
+herramienta nueva: crear su HTML en `app/` y sumarla al arreglo
+`HERRAMIENTAS` dentro de `inicio.html`.
+
+## Herramienta: tablas de frecuencia (`app/tablas_frecuencia.html`)
+
+Se abre desde el menú, o directo con doble clic (necesita internet solo para
 cargar la librería de gráficas). Permite:
 
 - Cargar datos pegando texto o subiendo un CSV/TXT.
