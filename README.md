@@ -1,6 +1,6 @@
 # Tutor — Probabilidad y Estadística
 
-**Versión:** 1.6.2
+**Versión:** 1.7.0
 **Materia:** Probabilidad y Estadística — 4to semestre
 **Estado:** en desarrollo activo (el profesor aún no publicó el temario formal)
 

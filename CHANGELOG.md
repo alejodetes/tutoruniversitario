@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.7.0] - 2026-08-10
+### Cambiado
+- Tarjetas del menú de inicio rediseñadas con una "portada" grande a
+  color por herramienta (degradé + formas circulares decorativas) e
+  ícono más grande, en vez del avatar chico de antes. El badge de
+  estado ("Disponible"/"Próximamente") ahora flota superpuesto al
+  borde entre la portada y el cuerpo de la tarjeta. Inspirado en
+  referencias de apps con tarjetas tipo "portada + info" que pasó el
+  usuario.
+
 ## [1.6.2] - 2026-08-10
 ### Cambiado
 - El subtítulo "Probabilidad y Estadística · 4to semestre" del header
