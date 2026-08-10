@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.3.0] - 2026-08-10
+### Agregado
+- Checkbox "eje derecho en %" en barras/histograma: cuando la métrica
+  principal es un conteo (fi o Fi), agrega un segundo eje Y a la derecha
+  con su porcentaje asociado (hi% o Hi%), alineado a las mismas líneas de
+  grilla que el eje izquierdo — el clásico eje doble de un diagrama de
+  Pareto. No es una segunda serie independiente: el eje derecho es
+  siempre esa misma frecuencia dividida por n, así que la alineación
+  entre ambos ejes nunca es arbitraria.
+
 ## [1.2.0] - 2026-08-10
 ### Agregado
 - Selector de "Métrica" en las gráficas de barras/histograma: además de la

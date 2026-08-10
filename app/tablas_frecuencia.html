@@ -260,6 +260,15 @@
   .tabs-sm{gap:4px;margin-bottom:0;}
   .tabs-sm .tab{padding:5px 11px;font-size:12px;}
   #metricaRow{margin-top:0;margin-bottom:16px;}
+  .chk-eje{
+    display:flex;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:600;color:var(--ink-secondary);
+    margin:0 0 0 4px;cursor:pointer;
+    user-select:none;
+  }
+  .chk-eje input{accent-color:var(--accent);cursor:pointer;}
+  .chk-eje.disabled{opacity:.4;cursor:not-allowed;}
+  .chk-eje.disabled input{cursor:not-allowed;}
 
   .chart-layout{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;}
   .chart-box{position:relative;height:360px;flex:1 1 420px;min-width:280px;}
@@ -288,7 +297,7 @@
       <p>Probabilidad y Estadística · 4to semestre</p>
     </div>
     <div class="header-right">
-      <span class="badge">v1.2.0</span>
+      <span class="badge">v1.3.0</span>
       <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
     </div>
   </header>
@@ -354,6 +363,10 @@
           <div class="tab" data-metrica="Fi">Fi</div>
           <div class="tab" data-metrica="HiPct">Hi%</div>
         </div>
+        <label class="chk-eje" id="chkEjeDobleLabel" for="chkEjeDoble">
+          <input type="checkbox" id="chkEjeDoble">
+          eje derecho en %
+        </label>
       </div>
       <div class="chart-layout">
         <div class="chart-box">
@@ -380,11 +393,21 @@ let metricaActual = 'fi';
 // Métricas configurables para barras/histograma: la frecuencia no tiene que ser
 // siempre absoluta -> el usuario habilita/deshabilita cuál se grafica.
 const METRICAS = {
-  fi:    { campo: 'fi',    corto: 'fi',   etiqueta: 'Frecuencia absoluta (fi)',      eje: 'Frecuencia absoluta',      esPct: false },
+  fi:    { campo: 'fi',    corto: 'fi',   etiqueta: 'Frecuencia absoluta (fi)',      eje: 'Frecuencia absoluta',      esPct: false, parPct: 'hiPct' },
   hiPct: { campo: 'hiPct', corto: 'hi%',  etiqueta: 'Frecuencia relativa % (hi%)',   eje: 'Frecuencia relativa (%)',  esPct: true  },
-  Fi:    { campo: 'Fi',    corto: 'Fi',   etiqueta: 'Frecuencia acumulada (Fi)',     eje: 'Frecuencia acumulada',     esPct: false },
+  Fi:    { campo: 'Fi',    corto: 'Fi',   etiqueta: 'Frecuencia acumulada (Fi)',     eje: 'Frecuencia acumulada',     esPct: false, parPct: 'HiPct' },
   HiPct: { campo: 'HiPct', corto: 'Hi%',  etiqueta: 'Frec. acumulada % (Hi%)',       eje: 'Frecuencia acumulada (%)', esPct: true  }
 };
+
+// Redondea hacia arriba a un número "lindo" (1/2/5 × 10^k) para el techo de un eje.
+function techoLindo(x) {
+  if (!(x > 0)) return 1;
+  const exp = Math.floor(Math.log10(x));
+  const base = Math.pow(10, exp);
+  const frac = x / base;
+  const niceFrac = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10;
+  return niceFrac * base;
+}
 
 const CATEGORICAL_SLOTS = 8;
 const rootEl = document.documentElement;
@@ -470,8 +493,28 @@ document.querySelectorAll('#metricaTabs .tab').forEach(tab => {
     document.querySelectorAll('#metricaTabs .tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     metricaActual = tab.dataset.metrica;
+    sincronizarChkEjeDoble();
     if (datosOrdenados.length) dibujarGrafica();
   });
+});
+
+// El eje derecho (%) solo tiene sentido cuando la métrica principal es un conteo
+// (fi o Fi): ahí "hi%"/"Hi%" es exactamente ese mismo valor dividido por n.
+let ejeDobleActivo = false;
+const chkEjeDoble = document.getElementById('chkEjeDoble');
+const chkEjeDobleLabel = document.getElementById('chkEjeDobleLabel');
+
+function sincronizarChkEjeDoble() {
+  const permitido = !!METRICAS[metricaActual].parPct;
+  chkEjeDoble.disabled = !permitido;
+  chkEjeDobleLabel.classList.toggle('disabled', !permitido);
+  if (!permitido) { chkEjeDoble.checked = false; ejeDobleActivo = false; }
+}
+sincronizarChkEjeDoble();
+
+chkEjeDoble.addEventListener('change', () => {
+  ejeDobleActivo = chkEjeDoble.checked;
+  if (datosOrdenados.length) dibujarGrafica();
 });
 
 document.getElementById('btnExportCSV').addEventListener('click', exportarCSV);
@@ -707,58 +750,106 @@ function dibujarGrafica() {
     // La métrica graficada (fi, hi%, Fi, Hi%) la elige el usuario en "Métrica".
     const meta = METRICAS[metricaActual];
     const metricData = datosOrdenados.map(d => meta.esPct ? Number(d[meta.campo].toFixed(2)) : d[meta.campo]);
+    const n = datosOrdenados.reduce((s, d) => s + d.fi, 0);
+
+    // Eje derecho vinculado en %: solo aplica si la métrica principal es un conteo
+    // (fi/Fi) — ahí hi%/Hi% es exactamente ese mismo valor dividido por n, así que
+    // el eje derecho es una relectura exacta del izquierdo (no una segunda serie
+    // con una alineación arbitraria, que es lo que hace engañoso a un eje doble).
+    const mostrarEjeDoble = ejeDobleActivo && !meta.esPct && !!meta.parPct;
+    const metaPct = mostrarEjeDoble ? METRICAS[meta.parPct] : null;
+    let maxIzq, maxDer;
+    if (mostrarEjeDoble) {
+      maxIzq = techoLindo(Math.max(...metricData, 1));
+      maxDer = maxIzq / n * 100;
+    }
+
+    const datasets = [{
+      label: meta.etiqueta,
+      data: metricData,
+      yAxisID: 'y',
+      backgroundColor: accent,
+      hoverBackgroundColor: accent,
+      borderRadius: tipoActual === 'histogram'
+        ? 0
+        : { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+      borderSkipped: false,
+      categoryPercentage: tipoActual === 'histogram' ? 1.0 : 0.75,
+      barPercentage: tipoActual === 'histogram' ? 1.0 : 0.9,
+      maxBarThickness: tipoActual === 'histogram' ? undefined : 48
+    }];
+
+    if (mostrarEjeDoble) {
+      // Serie invisible: solo habilita el eje 'y1' en Chart.js, el dato real ya
+      // está en las barras y se agrega al tooltip a mano (ver callback abajo).
+      datasets.push({
+        type: 'line',
+        yAxisID: 'y1',
+        data: datosOrdenados.map(d => Number(d[metaPct.campo].toFixed(2))),
+        borderWidth: 0,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        showLine: false
+      });
+    }
+
+    const scales = {
+      y: {
+        beginAtZero: true,
+        max: mostrarEjeDoble ? maxIzq : undefined,
+        ticks: mostrarEjeDoble
+          ? { stepSize: maxIzq / 5, color: inkMuted, precision: 0 }
+          : { color: inkMuted, precision: meta.esPct ? undefined : 0, callback: meta.esPct ? (v) => v + '%' : undefined },
+        grid: { color: gridline, drawTicks: false },
+        border: { color: baseline },
+        title: { display: true, text: meta.eje, color: inkSecondary, font: { size: 12, weight: '600' } }
+      },
+      x: {
+        grid: { display: false },
+        border: { color: baseline },
+        ticks: { color: inkMuted },
+        title: { display: true, text: 'Valor / Categoría', color: inkSecondary, font: { size: 12, weight: '600' } }
+      }
+    };
+
+    if (mostrarEjeDoble) {
+      scales.y1 = {
+        position: 'right',
+        min: 0,
+        max: maxDer,
+        ticks: { stepSize: maxDer / 5, color: inkMuted, callback: (v) => v.toFixed(1) + '%' },
+        grid: { drawOnChartArea: false },
+        border: { color: baseline },
+        title: { display: true, text: metaPct.eje, color: inkSecondary, font: { size: 12, weight: '600' } }
+      };
+    }
 
     chart = new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: meta.etiqueta,
-          data: metricData,
-          backgroundColor: accent,
-          hoverBackgroundColor: accent,
-          borderRadius: tipoActual === 'histogram'
-            ? 0
-            : { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
-          borderSkipped: false,
-          categoryPercentage: tipoActual === 'histogram' ? 1.0 : 0.75,
-          barPercentage: tipoActual === 'histogram' ? 1.0 : 0.9,
-          maxBarThickness: tipoActual === 'histogram' ? undefined : 48
-        }]
-      },
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }, // una sola serie -> el título de la tarjeta ya la nombra
+          legend: { display: false }, // una sola serie visible -> el título de la tarjeta ya la nombra
           tooltip: {
             ...tooltipBase,
             displayColors: false,
+            filter: (item) => item.datasetIndex === 0, // nunca mostrar la serie invisible del eje derecho
             callbacks: {
               title(items) { return items[0].label; },
-              label(item) { return `${meta.corto} = ${item.parsed.y}${meta.esPct ? '%' : ''}`; }
+              label(item) {
+                let txt = `${meta.corto} = ${item.parsed.y}${meta.esPct ? '%' : ''}`;
+                if (mostrarEjeDoble) {
+                  const d = datosOrdenados[item.dataIndex];
+                  txt += `  ·  ${metaPct.corto} = ${d[metaPct.campo].toFixed(2)}%`;
+                }
+                return txt;
+              }
             }
           }
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: inkMuted,
-              precision: meta.esPct ? undefined : 0,
-              callback: meta.esPct ? (v) => v + '%' : undefined
-            },
-            grid: { color: gridline, drawTicks: false },
-            border: { color: baseline },
-            title: { display: true, text: meta.eje, color: inkSecondary, font: { size: 12, weight: '600' } }
-          },
-          x: {
-            grid: { display: false },
-            border: { color: baseline },
-            ticks: { color: inkMuted },
-            title: { display: true, text: 'Valor / Categoría', color: inkSecondary, font: { size: 12, weight: '600' } }
-          }
-        }
+        scales
       }
     });
   }
