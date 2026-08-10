@@ -5,63 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tablas de Frecuencia — Probabilidad y Estadística</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+<link rel="stylesheet" href="assets/theme.css">
 <style>
-  :root{
-    color-scheme: light;
-    --surface-page:#f9f9f7;
-    --surface-card:#fcfcfb;
-    --surface-sunken:#f2f1ee;
-    --ink:#0b0b0b;
-    --ink-secondary:#52514e;
-    --ink-muted:#898781;
-    --gridline:#e1e0d9;
-    --border:rgba(11,11,11,0.10);
-    --baseline:#c3c2b7;
-    --accent:#2a78d6;
-    --accent-ink:#ffffff;
-    --accent-soft-bg:rgba(42,120,214,0.12);
-    --accent-soft-ink:#1c5cab;
-    --good-text:#006300;
-    --radius:14px;
-    --shadow:0 1px 2px rgba(11,11,11,0.04), 0 8px 24px -16px rgba(11,11,11,0.18);
-
-    --series-1:#2a78d6;
-    --series-2:#eb6834;
-    --series-3:#1baf7a;
-    --series-4:#eda100;
-    --series-5:#e87ba4;
-    --series-6:#008300;
-    --series-7:#4a3aa7;
-    --series-8:#e34948;
-    --series-other:#898781;
-  }
-  :root[data-theme="dark"]{
-    color-scheme: dark;
-    --surface-page:#0d0d0d;
-    --surface-card:#1a1a19;
-    --surface-sunken:#141413;
-    --ink:#ffffff;
-    --ink-secondary:#c3c2b7;
-    --ink-muted:#898781;
-    --gridline:#2c2c2a;
-    --border:rgba(255,255,255,0.10);
-    --baseline:#383835;
-    --accent:#3987e5;
-    --accent-ink:#ffffff;
-    --accent-soft-bg:rgba(57,135,229,0.16);
-    --accent-soft-ink:#8fc0ff;
-    --good-text:#0ca30c;
-    --shadow:0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -18px rgba(0,0,0,0.6);
-
-    --series-1:#3987e5;
-    --series-2:#d95926;
-    --series-3:#199e70;
-    --series-4:#c98500;
-    --series-5:#d55181;
-    --series-6:#008300;
-    --series-7:#9085e9;
-    --series-8:#e66767;
-    --series-other:#6f6e69;
+  /* --baseline se usa solo acá (línea base de eje en las gráficas), el resto de
+     tokens vive en assets/theme.css para que el look sea uno solo en todo el tutor. */
+  :root{ --baseline:#6a6398; }
+  :root[data-theme="light"]{ --baseline:#c3c2b7; }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){ --baseline:#c3c2b7; }
   }
 
   *{box-sizing:border-box;}
@@ -300,7 +251,7 @@
       <p>Probabilidad y Estadística · 4to semestre</p>
     </div>
     <div class="header-right">
-      <span class="badge">v1.4.0</span>
+      <span class="badge">v1.5.0</span>
       <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
     </div>
   </header>
@@ -421,7 +372,7 @@ const ordenSelect = document.getElementById('ordenSelect');
 /* ---------- Tema claro / oscuro ---------- */
 
 function tema() {
-  return rootEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  return rootEl.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 
 function aplicarTema(t) {

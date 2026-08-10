@@ -1,6 +1,6 @@
 # Tutor — Probabilidad y Estadística
 
-**Versión:** 1.5.0
+**Versión:** 1.6.0
 **Materia:** Probabilidad y Estadística — 4to semestre
 **Estado:** en desarrollo activo (el profesor aún no publicó el temario formal)
 
@@ -21,6 +21,8 @@ TablasFrecuencia_ProbEstadistica/
 ├── CHANGELOG.md            historial de versiones
 ├── VERSION                 versión actual en texto plano
 ├── app/
+│   ├── assets/
+│   │   └── theme.css            tokens y estilos base compartidos por todo el tutor
 │   ├── inicio.html              menú central del tutor (abrir con doble clic)
 │   ├── tablas_frecuencia.html   herramienta: tablas de frecuencia
 │   ├── calendario.html          herramienta: calendario (entregas, parciales, reuniones)

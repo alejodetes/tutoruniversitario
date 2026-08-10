@@ -3,6 +3,28 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.6.0] - 2026-08-10
+### Cambiado
+- Rediseño visual completo del tutor, inspirado en referencias de apps
+  tipo fintech (fondo oscuro índigo, tarjetas muy redondeadas, acentos
+  cálidos color durazno, iconos en "avatares" circulares con degradé).
+  Sigue con selector claro/oscuro, pero ahora oscuro es el tema por
+  defecto.
+- Se centralizaron los tokens de color y los estilos base (header,
+  botón de tema, enlace de vuelta al menú, animaciones) en
+  `app/assets/theme.css`, compartido por las cuatro páginas del tutor.
+  Cambiar el look del sitio entero es ahora editar un solo archivo, no
+  cuatro copias del mismo bloque de CSS.
+- Se agregaron animaciones de entrada (tarjetas y filas aparecen con un
+  leve slide-up escalonado) y transiciones de hover más expresivas,
+  respetando `prefers-reduced-motion`.
+- Grilla del menú y layout de `tablas_frecuencia.html` ajustados para
+  verse bien tanto en escritorio como en mobile (una columna en
+  pantallas chicas, hasta 4 en pantallas grandes).
+- La paleta de series (`--series-1`..`--series-8`) usada en las
+  gráficas de `tablas_frecuencia.html` **no se tocó**: sigue siendo la
+  validada para daltonismo.
+
 ## [1.5.0] - 2026-08-10
 ### Agregado
 - Herramienta "Calendario" (`app/calendario.html`): entregas y parciales
