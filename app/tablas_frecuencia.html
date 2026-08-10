@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablas de Frecuencia — Probabilidad y Estadística</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --accent:#4f46e5;
+    --accent-2:#7c3aed;
+    --accent-soft:#eef2ff;
+    --good:#16a34a;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    padding:24px;
+  }
+  .wrap{max-width:1100px;margin:0 auto;}
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  header h1{font-size:22px;margin:0;}
+  header p{margin:2px 0 0;color:var(--muted);font-size:13px;}
+  .badge{
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:20px;
+  }
+  @media (max-width: 880px){ .grid{grid-template-columns: 1fr;} }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .card h2{
+    font-size:15px;
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h2 .num{
+    background:var(--accent);
+    color:white;
+    width:22px;height:22px;
+    border-radius:50%;
+    font-size:12px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;}
+  textarea{
+    width:100%;
+    min-height:120px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    font-family:inherit;
+    font-size:14px;
+    resize:vertical;
+  }
+  textarea:focus, select:focus{outline:2px solid var(--accent-soft); border-color:var(--accent);}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+  select{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:13px;
+    background:white;
+  }
+  button{
+    border:none;
+    border-radius:9px;
+    padding:9px 16px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:opacity .15s;
+  }
+  button:hover{opacity:0.88;}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-secondary{background:var(--accent-soft);color:var(--accent);}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+  .file-btn{
+    display:inline-block;
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:9px 16px;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  input[type=file]{display:none;}
+  .stats{
+    display:flex;
+    gap:14px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .stat{
+    background:var(--accent-soft);
+    border-radius:10px;
+    padding:8px 14px;
+    font-size:13px;
+    color:var(--accent);
+    font-weight:600;
+  }
+  .stat span{display:block;font-size:18px;color:var(--ink);font-weight:700;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:14px;
+    font-size:13.5px;
+  }
+  th,td{
+    padding:9px 10px;
+    text-align:center;
+    border-bottom:1px solid var(--border);
+  }
+  th{
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-weight:700;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  tr:last-child td{font-weight:700;border-top:2px solid var(--border);border-bottom:none;background:#fafafa;}
+  .full{grid-column: 1 / -1;}
+  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .tab{
+    padding:7px 14px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    background:var(--bg);
+    color:var(--muted);
+    border:1px solid var(--border);
+  }
+  .tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+  .chart-box{position:relative;height:340px;}
+  .empty{
+    color:var(--muted);
+    font-size:13px;
+    text-align:center;
+    padding:30px 10px;
+  }
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px;}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>📊 Tablas de Frecuencia</h1>
+      <p>Probabilidad y Estadística · 4to semestre</p>
+    </div>
+    <span class="badge">v1.0.2</span>
+  </header>
+
+  <div class="grid">
+
+    <!-- ENTRADA DE DATOS -->
+    <div class="card">
+      <h2><span class="num">1</span> Datos</h2>
+      <label for="rawInput">Pegá tus datos (separados por coma, espacio o salto de línea)</label>
+      <textarea id="rawInput" placeholder="Ejemplo:&#10;A, B, A, C, B, A, D, C, B, A"></textarea>
+
+      <div class="row">
+        <button class="btn-primary" id="btnCalcular">Generar tabla</button>
+        <label class="file-btn" for="fileInput">📂 Cargar CSV / TXT</label>
+        <input type="file" id="fileInput" accept=".csv,.txt">
+        <button class="btn-ghost" id="btnLimpiar">Limpiar</button>
+      </div>
+
+      <div class="row">
+        <label style="margin:0;">Ordenar por:</label>
+        <select id="ordenSelect">
+          <option value="entrada">Orden de aparición</option>
+          <option value="valor">Valor / categoría (A→Z, 0→9)</option>
+          <option value="frecDesc">Frecuencia (mayor a menor)</option>
+        </select>
+      </div>
+      <p class="hint">Sirve tanto para datos cualitativos (colores, categorías) como discretos (números enteros pequeños).</p>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="card">
+      <h2><span class="num">2</span> Resumen</h2>
+      <div id="resumenBox">
+        <div class="empty">Generá la tabla para ver el resumen (n, k, moda, etc.)</div>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card full">
+      <h2><span class="num">3</span> Tabla de frecuencias</h2>
+      <div id="tablaBox">
+        <div class="empty">Todavía no hay datos cargados.</div>
+      </div>
+      <div class="row" id="exportRow" style="display:none;">
+        <button class="btn-secondary" id="btnExportCSV">⬇️ Descargar tabla (CSV)</button>
+      </div>
+    </div>
+
+    <!-- GRAFICAS -->
+    <div class="card full">
+      <h2><span class="num">4</span> Gráficas</h2>
+      <div class="tabs">
+        <div class="tab active" data-tipo="bar">Barras</div>
+        <div class="tab" data-tipo="histogram">Histograma</div>
+        <div class="tab" data-tipo="pie">Circular (pastel)</div>
+      </div>
+      <div class="chart-box">
+        <canvas id="chartCanvas"></canvas>
+      </div>
+      <div class="row" id="chartExportRow" style="display:none;">
+        <button class="btn-secondary" id="btnExportPNG">⬇️ Descargar gráfica (PNG)</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Hecho para uso personal · abrí este archivo con doble clic, no necesita instalación.</footer>
+</div>
+
+<script>
+let datosOrdenados = []; // [{valor, fi, hi, hiPct, Fi, HiPct}]
+let chart = null;
+let tipoActual = 'bar';
+
+const rawInput = document.getElementById('rawInput');
+const ordenSelect = document.getElementById('ordenSelect');
+
+document.getElementById('btnCalcular').addEventListener('click', generarTabla);
+document.getElementById('btnLimpiar').addEventListener('click', () => {
+  rawInput.value = '';
+  document.getElementById('tablaBox').innerHTML = '<div class="empty">Todavía no hay datos cargados.</div>';
+  document.getElementById('resumenBox').innerHTML = '<div class="empty">Generá la tabla para ver el resumen (n, k, moda, etc.)</div>';
+  document.getElementById('exportRow').style.display = 'none';
+  document.getElementById('chartExportRow').style.display = 'none';
+  if (chart) { chart.destroy(); chart = null; }
+});
+ordenSelect.addEventListener('change', () => { if (datosOrdenados.length) generarTabla(); });
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    let text = evt.target.result;
+    // Si parece CSV con varias columnas, tomamos solo la primera columna
+    const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+    const valores = lines.map(l => l.split(',')[0].trim()).filter(v => v !== '');
+    rawInput.value = valores.join(', ');
+    generarTabla();
+  };
+  reader.readAsText(file);
+});
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    tipoActual = tab.dataset.tipo;
+    if (datosOrdenados.length) dibujarGrafica();
+  });
+});
+
+document.getElementById('btnExportCSV').addEventListener('click', exportarCSV);
+document.getElementById('btnExportPNG').addEventListener('click', exportarPNG);
+
+function parseDatos(texto) {
+  return texto
+    .split(/[\n,;]+|\s{2,}|(?<=\S)\s(?=\S)/)
+    .map(v => v.trim())
+    .filter(v => v !== '');
+}
+
+// Más robusto: separar por coma, punto y coma o salto de línea; si no hay ninguno, separar por espacios
+function tokenizar(texto) {
+  let partes;
+  if (/[,;\n]/.test(texto)) {
+    partes = texto.split(/[,;\n]+/);
+  } else {
+    partes = texto.split(/\s+/);
+  }
+  return partes.map(v => v.trim()).filter(v => v !== '');
+}
+
+function esNumero(v) {
+  return v !== '' && !isNaN(v);
+}
+
+function generarTabla() {
+  const valores = tokenizar(rawInput.value);
+  if (valores.length === 0) {
+    alert('Ingresá al menos un dato.');
+    return;
+  }
+
+  const conteo = new Map();
+  const ordenAparicion = [];
+  valores.forEach(v => {
+    if (!conteo.has(v)) { conteo.set(v, 0); ordenAparicion.push(v); }
+    conteo.set(v, conteo.get(v) + 1);
+  });
+
+  const n = valores.length;
+  let claves = Array.from(conteo.keys());
+  const todosNumericos = claves.every(esNumero);
+
+  const modo = ordenSelect.value;
+  if (modo === 'valor') {
+    claves.sort((a, b) => todosNumericos ? (parseFloat(a) - parseFloat(b)) : a.localeCompare(b, 'es'));
+  } else if (modo === 'frecDesc') {
+    claves.sort((a, b) => conteo.get(b) - conteo.get(a));
+  } else {
+    claves = ordenAparicion;
+  }
+
+  let acumFi = 0;
+  datosOrdenados = claves.map(valor => {
+    const fi = conteo.get(valor);
+    const hi = fi / n;
+    acumFi += fi;
+    return {
+      valor,
+      fi,
+      hi,
+      hiPct: hi * 100,
+      Fi: acumFi,
+      HiPct: (acumFi / n) * 100
+    };
+  });
+
+  renderTabla(n, claves.length, todosNumericos);
+  renderResumen(n, claves.length, valores, conteo);
+  dibujarGrafica();
+
+  document.getElementById('exportRow').style.display = 'flex';
+  document.getElementById('chartExportRow').style.display = 'flex';
+}
+
+function renderTabla(n, k, esNumerico) {
+  const box = document.getElementById('tablaBox');
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>${esNumerico ? 'Valor (xi)' : 'Categoría'}</th>
+        <th>Frec. absoluta (fi)</th>
+        <th>Frec. relativa (hi)</th>
+        <th>Frec. relativa % (hi%)</th>
+        <th>Frec. acumulada (Fi)</th>
+        <th>Frec. acum. % (Hi%)</th>
+      </tr>
+    </thead>
+    <tbody>`;
+  datosOrdenados.forEach(d => {
+    html += `<tr>
+      <td>${d.valor}</td>
+      <td>${d.fi}</td>
+      <td>${d.hi.toFixed(4)}</td>
+      <td>${d.hiPct.toFixed(2)}%</td>
+      <td>${d.Fi}</td>
+      <td>${d.HiPct.toFixed(2)}%</td>
+    </tr>`;
+  });
+  html += `<tr>
+      <td>Total</td>
+      <td>${n}</td>
+      <td>1.0000</td>
+      <td>100.00%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>`;
+  html += `</tbody></table>`;
+  box.innerHTML = html;
+}
+
+function renderResumen(n, k, valores, conteo) {
+  let modaFi = -1, moda = [];
+  conteo.forEach((fi, valor) => {
+    if (fi > modaFi) { modaFi = fi; moda = [valor]; }
+    else if (fi === modaFi) { moda.push(valor); }
+  });
+
+  const box = document.getElementById('resumenBox');
+  box.innerHTML = `
+    <div class="stats">
+      <div class="stat">n (total datos)<span>${n}</span></div>
+      <div class="stat">k (categorías)<span>${k}</span></div>
+      <div class="stat">Moda<span style="font-size:14px;">${moda.join(', ')} (fi=${modaFi})</span></div>
+    </div>`;
+}
+
+function dibujarGrafica() {
+  const ctx = document.getElementById('chartCanvas').getContext('2d');
+  const labels = datosOrdenados.map(d => d.valor);
+  const data = datosOrdenados.map(d => d.fi);
+  const colores = generarColores(labels.length);
+
+  if (chart) chart.destroy();
+
+  if (tipoActual === 'pie') {
+    chart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [{ data, backgroundColor: colores }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'right' } }
+      }
+    });
+  } else {
+    // bar y histogram comparten estructura; histogram sin espacio entre barras
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Frecuencia absoluta (fi)',
+          data,
+          backgroundColor: '#4f46e5',
+          borderRadius: tipoActual === 'histogram' ? 0 : 6,
+          categoryPercentage: tipoActual === 'histogram' ? 1.0 : 0.8,
+          barPercentage: tipoActual === 'histogram' ? 1.0 : 0.85,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Frecuencia absoluta' } },
+          x: { title: { display: true, text: 'Valor / Categoría' } }
+        }
+      }
+    });
+  }
+}
+
+function generarColores(n) {
+  const base = ['#4f46e5','#7c3aed','#ec4899','#f97316','#22c55e','#06b6d4','#eab308','#ef4444','#8b5cf6','#14b8a6'];
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(base[i % base.length]);
+  return out;
+}
+
+function exportarCSV() {
+  let csv = 'Valor,Frecuencia absoluta,Frecuencia relativa,Frecuencia relativa %,Frecuencia acumulada,Frecuencia acumulada %\n';
+  datosOrdenados.forEach(d => {
+    csv += `${d.valor},${d.fi},${d.hi.toFixed(4)},${d.hiPct.toFixed(2)},${d.Fi},${d.HiPct.toFixed(2)}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tabla_frecuencias.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportarPNG() {
+  const canvas = document.getElementById('chartCanvas');
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `grafica_${tipoActual}.png`;
+  a.click();
+}
+</script>
+</body>
+</html>

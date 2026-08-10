@@ -1,0 +1,179 @@
+% ============================================================
+%  PLANTILLA DE INFORME — Probabilidad y Estadística
+%  Proyecto: TablasFrecuencia_ProbEstadistica (v1.0.1)
+%  Compilar con: pdflatex plantilla_informe.tex  (2 veces, por el índice)
+%  También funciona directo en Overleaf.
+% ============================================================
+\documentclass[11pt,letterpaper]{article}
+
+% ---------- Idioma y codificación ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% Nota: si tu instalación de TeX tiene el paquete de idioma español
+% (texlive-lang-spanish / babel-spanish, ya incluido en Overleaf), podés
+% activar la localización automática descomentando la línea de abajo:
+% \usepackage[spanish,es-noshorthands]{babel}
+% Sin babel, los acentos igual funcionan bien (gracias a inputenc+fontenc);
+% solo se pierde la traducción automática de "Contents"/fechas, que ya
+% dejamos resuelta manualmente más abajo.
+\renewcommand{\contentsname}{Índice}
+\makeatletter
+\renewcommand{\today}{\number\day\ de \ifcase\month\or
+  enero\or febrero\or marzo\or abril\or mayo\or junio\or
+  julio\or agosto\or septiembre\or octubre\or noviembre\or diciembre\fi
+  \ de \number\year}
+\makeatother
+
+% ---------- Layout ----------
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- Tablas y gráficas ----------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}
+
+% ---------- Color y estilo ----------
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{4F46E5}
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent!80!black}}{\thesubsection}{1em}{}
+
+% ---------- Encabezado / pie de página ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Probabilidad y Estadística}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---------- Matemáticas ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---------- Enlaces ----------
+\usepackage[colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent]{hyperref}
+
+% ============================================================
+%  DATOS DEL INFORME — completar antes de compilar
+% ============================================================
+\newcommand{\tituloInforme}{Título del informe}
+\newcommand{\nombreEstudiante}{Nombre y Apellido}
+\newcommand{\numeroCuenta}{N.º de cuenta / carné}
+\newcommand{\nombreMateria}{Probabilidad y Estadística}
+\newcommand{\nombreProfesor}{Nombre del/la docente}
+\newcommand{\semestre}{Cuarto semestre}
+\newcommand{\fechaEntrega}{\today}
+
+\begin{document}
+
+% ---------------- PORTADA ----------------
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    {\Large \textbf{Universidad}}\\[0.3cm]
+    {\large Facultad / Carrera}\\[2.5cm]
+
+    {\color{accent}\rule{\linewidth}{1.2pt}}\\[0.4cm]
+    {\Huge \bfseries \tituloInforme}\\[0.4cm]
+    {\color{accent}\rule{\linewidth}{1.2pt}}\\[2cm]
+
+    {\large \nombreMateria\ --- \semestre}\\[0.3cm]
+    {\large Docente: \nombreProfesor}\\[2.5cm]
+
+    {\large \textbf{Presentado por:}}\\
+    {\large \nombreEstudiante}\\
+    {\large \numeroCuenta}\\[2.5cm]
+
+    \vfill
+    {\large \fechaEntrega}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ---------------- INTRODUCCIÓN ----------------
+\section{Introducción}
+Breve contexto del informe: qué problema estadístico se aborda, por qué es relevante
+y qué se va a presentar en las siguientes secciones.
+
+% ---------------- OBJETIVOS ----------------
+\section{Objetivos}
+\subsection{Objetivo general}
+Redactar el objetivo general del trabajo.
+
+\subsection{Objetivos específicos}
+\begin{itemize}
+    \item Primer objetivo específico.
+    \item Segundo objetivo específico.
+    \item Tercer objetivo específico.
+\end{itemize}
+
+% ---------------- MARCO TEÓRICO ----------------
+\section{Marco teórico}
+Definiciones relevantes: frecuencia absoluta ($f_i$), frecuencia relativa ($h_i = f_i/n$),
+frecuencia relativa porcentual, frecuencia acumulada ($F_i$), etc. Citar bibliografía
+con \verb|\cite{}| cuando corresponda \cite{ejemplo2024}.
+
+% ---------------- DESARROLLO / METODOLOGÍA ----------------
+\section{Desarrollo}
+
+\subsection{Datos}
+Descripción de los datos recolectados: fuente, tamaño de la muestra ($n$), tipo de
+variable (cualitativa, discreta, continua).
+
+\subsection{Tabla de frecuencias}
+La tabla \ref{tab:frecuencias} fue generada con la app \texttt{tablas\_frecuencia.html}
+del proyecto (carpeta \texttt{app/}), exportada como CSV y pegada aquí.
+
+\begin{table}[H]
+    \centering
+    \caption{Tabla de distribución de frecuencias}
+    \label{tab:frecuencias}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Categoría} & \textbf{$f_i$} & \textbf{$h_i$} & \textbf{$h_i\%$} & \textbf{$F_i$} \\
+        \midrule
+        A & 4 & 0.40 & 40.0\% & 4 \\
+        B & 3 & 0.30 & 30.0\% & 7 \\
+        C & 2 & 0.20 & 20.0\% & 9 \\
+        D & 1 & 0.10 & 10.0\% & 10 \\
+        \midrule
+        \textbf{Total} & \textbf{10} & \textbf{1.00} & \textbf{100.0\%} & --- \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Gráfica}
+La figura \ref{fig:grafica} se exportó como PNG directamente desde la app.
+
+\begin{figure}[H]
+    \centering
+    % Reemplazar por la imagen exportada, p. ej.:
+    % \includegraphics[width=0.7\linewidth]{grafica_bar.png}
+    \fbox{\parbox{0.7\linewidth}{\centering\vspace{2cm}Insertar \texttt{grafica\_bar.png} aquí\vspace{2cm}}}
+    \caption{Gráfica de barras de la distribución de frecuencias}
+    \label{fig:grafica}
+\end{figure}
+
+\subsection{Análisis}
+Interpretación de los resultados: qué categoría es la moda, cómo se distribuyen los
+datos, observaciones relevantes.
+
+% ---------------- CONCLUSIONES ----------------
+\section{Conclusiones}
+Síntesis de los hallazgos principales y respuesta a los objetivos planteados.
+
+% ---------------- REFERENCIAS ----------------
+\begin{thebibliography}{9}
+\bibitem{ejemplo2024}
+Apellido, N. (2024). \textit{Título del libro o material}. Editorial.
+\end{thebibliography}
+
+\end{document}

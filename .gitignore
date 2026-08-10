@@ -1,0 +1,13 @@
+# Archivos temporales de compilación LaTeX
+latex/output/*.aux
+latex/output/*.log
+latex/output/*.out
+latex/output/*.toc
+latex/*.aux
+latex/*.log
+latex/*.out
+latex/*.toc
+
+# Sistema
+.DS_Store
+Thumbs.db
