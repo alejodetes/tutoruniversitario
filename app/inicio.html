@@ -75,6 +75,15 @@
 
   .hero{margin-bottom:26px;}
   .hero p{margin:6px 0 0;color:var(--ink-secondary);font-size:13.5px;max-width:46ch;}
+
+  .revisiones{
+    display:flex;
+    justify-content:flex-end;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:18px;
+  }
+  .revisiones a{text-decoration:none;}
 </style>
 </head>
 <body>
@@ -83,7 +92,7 @@
   <header>
     <div>
       <h1>🎓 Tutor</h1>
-      <p>Probabilidad y Estadística · 4to semestre</p>
+      <p>Tu asistente académico</p>
     </div>
     <div class="header-right">
       <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
@@ -91,6 +100,11 @@
   </header>
 
   <div class="grid" id="grid"></div>
+
+  <div class="revisiones">
+    <a href="calendario.html"><span class="check-badge">📅 Calendario · Revisado <b>10 ago 2026</b></span></a>
+    <a href="correos.html"><span class="check-badge">📧 Correos · Revisado <b>10 ago 2026</b></span></a>
+  </div>
 
   <footer>Elegí una herramienta para empezar.</footer>
 </div>

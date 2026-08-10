@@ -3,6 +3,15 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.6.2] - 2026-08-10
+### Cambiado
+- El subtítulo "Probabilidad y Estadística · 4to semestre" del header
+  de las 4 páginas pasa a ser "Tu asistente académico" — el tutor ya
+  no es solo para esa materia.
+- El menú central (`app/inicio.html`) suma abajo a la derecha un
+  resumen con la última fecha de revisión de Calendario y de Correos
+  importantes, enlazado a cada herramienta.
+
 ## [1.6.1] - 2026-08-10
 ### Agregado
 - Badge "✓ Revisado [fecha]" en el header de Calendario y Correos
