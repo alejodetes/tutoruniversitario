@@ -51,7 +51,15 @@
 <script>
 /* Correos que el usuario marcó como importantes a mano durante el chat.
    Sin filtro automático — se agregan uno por uno cuando se conversa. */
-const CORREOS = [];
+const CORREOS = [
+  {
+    remitente: 'David Herrera (Prof. Ing. de Sistemas)',
+    asunto: 'Audios Taller 10',
+    fecha: '10 ago 2026',
+    resumen: 'El profesor envió 5 archivos de audio para el Taller 10 (sin texto adicional en el cuerpo del correo). Revisar en Gmail para escucharlos y ver instrucciones.',
+    link: 'https://mail.google.com/mail/u/0/#all/19fed82dad340a43'
+  }
+];
 
 const lista = document.getElementById('lista');
 
