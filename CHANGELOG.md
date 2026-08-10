@@ -3,6 +3,29 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.1.0] - 2026-08-10
+### Cambiado
+- Rediseño completo de la interfaz: sistema de tokens de color claro/oscuro
+  (con selector de tema 🌙/☀️ persistente), tipografía y espaciados
+  consistentes, tarjetas y controles con mejor jerarquía visual.
+- Gráficas reconstruidas siguiendo una metodología de data-viz validada:
+  - Barras/histograma usan un solo tono de acento (la identidad ya la da el
+    eje X), con extremos redondeados y grosor limitado — evita el "arcoíris"
+    decorativo que no aportaba información.
+  - El pastel usa una paleta categórica de 8 tonos en orden fijo, validada
+    para daltonismo (protanopía/deuteranopía) y contraste; con más de 8
+    categorías, el resto se agrupa en "Otros" en vez de generar colores
+    nuevos indistinguibles.
+  - Tooltips, leyenda propia y ejes rediseñados para verse bien en ambos
+    temas.
+- Tarjetas de resumen (n, k, moda) reestilizadas como "stat tiles".
+
+### Corregido
+- La tabla y el resumen ahora se construyen con el DOM (`textContent`) en
+  vez de `innerHTML`, evitando que datos pegados por el usuario puedan
+  interpretarse como HTML.
+- Exportación a CSV ahora escapa comillas y separadores en los valores.
+
 ## [1.0.2] - 2026-08-10
 ### Corregido
 - Bug crítico: el `<script>` de Chart.js apuntaba a la versión 4.4.4, que no

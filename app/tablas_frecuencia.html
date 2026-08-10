@@ -7,92 +7,171 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#f4f6fb;
-    --card:#ffffff;
-    --ink:#1f2937;
-    --muted:#6b7280;
-    --border:#e5e7eb;
-    --accent:#4f46e5;
-    --accent-2:#7c3aed;
-    --accent-soft:#eef2ff;
-    --good:#16a34a;
+    color-scheme: light;
+    --surface-page:#f9f9f7;
+    --surface-card:#fcfcfb;
+    --surface-sunken:#f2f1ee;
+    --ink:#0b0b0b;
+    --ink-secondary:#52514e;
+    --ink-muted:#898781;
+    --gridline:#e1e0d9;
+    --border:rgba(11,11,11,0.10);
+    --baseline:#c3c2b7;
+    --accent:#2a78d6;
+    --accent-ink:#ffffff;
+    --accent-soft-bg:rgba(42,120,214,0.12);
+    --accent-soft-ink:#1c5cab;
+    --good-text:#006300;
     --radius:14px;
+    --shadow:0 1px 2px rgba(11,11,11,0.04), 0 8px 24px -16px rgba(11,11,11,0.18);
+
+    --series-1:#2a78d6;
+    --series-2:#eb6834;
+    --series-3:#1baf7a;
+    --series-4:#eda100;
+    --series-5:#e87ba4;
+    --series-6:#008300;
+    --series-7:#4a3aa7;
+    --series-8:#e34948;
+    --series-other:#898781;
   }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --surface-page:#0d0d0d;
+    --surface-card:#1a1a19;
+    --surface-sunken:#141413;
+    --ink:#ffffff;
+    --ink-secondary:#c3c2b7;
+    --ink-muted:#898781;
+    --gridline:#2c2c2a;
+    --border:rgba(255,255,255,0.10);
+    --baseline:#383835;
+    --accent:#3987e5;
+    --accent-ink:#ffffff;
+    --accent-soft-bg:rgba(57,135,229,0.16);
+    --accent-soft-ink:#8fc0ff;
+    --good-text:#0ca30c;
+    --shadow:0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -18px rgba(0,0,0,0.6);
+
+    --series-1:#3987e5;
+    --series-2:#d95926;
+    --series-3:#199e70;
+    --series-4:#c98500;
+    --series-5:#d55181;
+    --series-6:#008300;
+    --series-7:#9085e9;
+    --series-8:#e66767;
+    --series-other:#6f6e69;
+  }
+
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:var(--surface-page);
     color:var(--ink);
-    padding:24px;
+    padding:28px 20px 60px;
+    transition: background .2s ease, color .2s ease;
   }
-  .wrap{max-width:1100px;margin:0 auto;}
+  .wrap{max-width:1120px;margin:0 auto;}
+
   header{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    margin-bottom:24px;
+    margin-bottom:28px;
     flex-wrap:wrap;
-    gap:10px;
+    gap:14px;
   }
-  header h1{font-size:22px;margin:0;}
-  header p{margin:2px 0 0;color:var(--muted);font-size:13px;}
+  header h1{font-size:23px;margin:0;font-weight:700;letter-spacing:-.01em;}
+  header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
+  .header-right{display:flex;align-items:center;gap:10px;}
   .badge{
-    background:var(--accent-soft);
-    color:var(--accent);
+    background:var(--accent-soft-bg);
+    color:var(--accent-soft-ink);
     padding:4px 10px;
     border-radius:999px;
     font-size:12px;
     font-weight:600;
   }
+  .theme-toggle{
+    width:36px;height:36px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--surface-card);
+    color:var(--ink-secondary);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-size:16px;
+    line-height:1;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .theme-toggle:hover{background:var(--surface-sunken);color:var(--ink);}
+  .theme-toggle:focus-visible, a:focus-visible, button:focus-visible, .tab:focus-visible, select:focus-visible, .file-btn:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+
   .grid{
     display:grid;
     grid-template-columns: 1fr 1fr;
     gap:20px;
   }
   @media (max-width: 880px){ .grid{grid-template-columns: 1fr;} }
+
   .card{
-    background:var(--card);
+    background:var(--surface-card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:20px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    padding:22px;
+    box-shadow: var(--shadow);
+    transition: background .2s ease, border-color .2s ease;
   }
   .card h2{
-    font-size:15px;
-    margin:0 0 14px;
+    font-size:14px;
+    margin:0 0 16px;
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:9px;
+    font-weight:700;
+    letter-spacing:.01em;
+    color:var(--ink);
   }
   .card h2 .num{
     background:var(--accent);
-    color:white;
+    color:var(--accent-ink);
     width:22px;height:22px;
     border-radius:50%;
     font-size:12px;
     display:flex;align-items:center;justify-content:center;
     flex-shrink:0;
+    font-weight:700;
   }
-  label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;}
+
+  label{font-size:12.5px;font-weight:600;color:var(--ink-secondary);display:block;margin-bottom:7px;}
   textarea{
     width:100%;
     min-height:120px;
     border:1px solid var(--border);
     border-radius:10px;
-    padding:10px 12px;
+    padding:11px 13px;
     font-family:inherit;
     font-size:14px;
     resize:vertical;
+    background:var(--surface-sunken);
+    color:var(--ink);
   }
-  textarea:focus, select:focus{outline:2px solid var(--accent-soft); border-color:var(--accent);}
+  textarea::placeholder{color:var(--ink-muted);}
+  textarea:focus, select:focus{outline:2px solid var(--accent-soft-bg); border-color:var(--accent);}
+
   .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center;}
   select{
     border:1px solid var(--border);
     border-radius:8px;
     padding:8px 10px;
     font-size:13px;
-    background:white;
+    background:var(--surface-card);
+    color:var(--ink);
   }
   button{
     border:none;
@@ -101,16 +180,18 @@
     font-size:13px;
     font-weight:600;
     cursor:pointer;
-    transition:opacity .15s;
+    transition: opacity .15s ease, transform .05s ease;
+    font-family:inherit;
   }
+  button:active{transform:translateY(1px);}
   button:hover{opacity:0.88;}
-  .btn-primary{background:var(--accent);color:white;}
-  .btn-secondary{background:var(--accent-soft);color:var(--accent);}
-  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-secondary{background:var(--accent-soft-bg);color:var(--accent-soft-ink);}
+  .btn-ghost{background:transparent;color:var(--ink-secondary);border:1px solid var(--border);}
   .file-btn{
     display:inline-block;
-    background:var(--accent-soft);
-    color:var(--accent);
+    background:var(--accent-soft-bg);
+    color:var(--accent-soft-ink);
     padding:9px 16px;
     border-radius:9px;
     font-size:13px;
@@ -118,21 +199,25 @@
     cursor:pointer;
   }
   input[type=file]{display:none;}
+
   .stats{
     display:flex;
-    gap:14px;
-    margin-top:14px;
+    gap:12px;
+    margin-top:6px;
     flex-wrap:wrap;
   }
   .stat{
-    background:var(--accent-soft);
-    border-radius:10px;
-    padding:8px 14px;
-    font-size:13px;
-    color:var(--accent);
+    background:var(--surface-sunken);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:12.5px;
+    color:var(--ink-secondary);
     font-weight:600;
+    min-width:110px;
   }
-  .stat span{display:block;font-size:18px;color:var(--ink);font-weight:700;}
+  .stat .value{display:block;font-size:22px;color:var(--ink);font-weight:700;margin-top:3px;}
+
   table{
     width:100%;
     border-collapse:collapse;
@@ -140,41 +225,55 @@
     font-size:13.5px;
   }
   th,td{
-    padding:9px 10px;
+    padding:10px 10px;
     text-align:center;
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid var(--gridline);
+    font-variant-numeric: tabular-nums;
   }
   th{
-    background:var(--accent-soft);
-    color:var(--accent);
+    background:var(--surface-sunken);
+    color:var(--ink-secondary);
     font-weight:700;
-    font-size:12px;
+    font-size:11.5px;
     text-transform:uppercase;
-    letter-spacing:.03em;
+    letter-spacing:.04em;
+    font-variant-numeric: normal;
   }
-  tr:last-child td{font-weight:700;border-top:2px solid var(--border);border-bottom:none;background:#fafafa;}
+  tr:last-child td{font-weight:700;border-top:2px solid var(--gridline);border-bottom:none;background:var(--surface-sunken);}
+  .table-scroll{overflow-x:auto;}
+
   .full{grid-column: 1 / -1;}
-  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
   .tab{
     padding:7px 14px;
     border-radius:8px;
     font-size:13px;
     font-weight:600;
     cursor:pointer;
-    background:var(--bg);
-    color:var(--muted);
+    background:var(--surface-sunken);
+    color:var(--ink-secondary);
     border:1px solid var(--border);
+    transition: background .15s ease, color .15s ease;
   }
-  .tab.active{background:var(--accent);color:white;border-color:var(--accent);}
-  .chart-box{position:relative;height:340px;}
+  .tab:hover{color:var(--ink);}
+  .tab.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+
+  .chart-layout{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;}
+  .chart-box{position:relative;height:360px;flex:1 1 420px;min-width:280px;}
+  #chartLegend{flex:0 0 190px;display:flex;flex-direction:column;gap:8px;padding-top:6px;}
+  #chartLegend .legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-secondary);}
+  #chartLegend .legend-swatch{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+  #chartLegend .legend-value{margin-left:auto;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
+  @media (max-width:640px){ #chartLegend{flex-direction:row;flex-wrap:wrap;flex-basis:100%;} }
+
   .empty{
-    color:var(--muted);
+    color:var(--ink-muted);
     font-size:13px;
     text-align:center;
-    padding:30px 10px;
+    padding:34px 10px;
   }
-  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px;}
-  .hint{font-size:12px;color:var(--muted);margin-top:6px;}
+  footer{text-align:center;color:var(--ink-muted);font-size:12px;margin-top:32px;}
+  .hint{font-size:12px;color:var(--ink-muted);margin-top:8px;}
 </style>
 </head>
 <body>
@@ -185,7 +284,10 @@
       <h1>📊 Tablas de Frecuencia</h1>
       <p>Probabilidad y Estadística · 4to semestre</p>
     </div>
-    <span class="badge">v1.0.2</span>
+    <div class="header-right">
+      <span class="badge">v1.1.0</span>
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
+    </div>
   </header>
 
   <div class="grid">
@@ -225,7 +327,7 @@
     <!-- TABLA -->
     <div class="card full">
       <h2><span class="num">3</span> Tabla de frecuencias</h2>
-      <div id="tablaBox">
+      <div id="tablaBox" class="table-scroll">
         <div class="empty">Todavía no hay datos cargados.</div>
       </div>
       <div class="row" id="exportRow" style="display:none;">
@@ -241,8 +343,11 @@
         <div class="tab" data-tipo="histogram">Histograma</div>
         <div class="tab" data-tipo="pie">Circular (pastel)</div>
       </div>
-      <div class="chart-box">
-        <canvas id="chartCanvas"></canvas>
+      <div class="chart-layout">
+        <div class="chart-box">
+          <canvas id="chartCanvas"></canvas>
+        </div>
+        <div id="chartLegend"></div>
       </div>
       <div class="row" id="chartExportRow" style="display:none;">
         <button class="btn-secondary" id="btnExportPNG">⬇️ Descargar gráfica (PNG)</button>
@@ -259,16 +364,56 @@ let datosOrdenados = []; // [{valor, fi, hi, hiPct, Fi, HiPct}]
 let chart = null;
 let tipoActual = 'bar';
 
+const CATEGORICAL_SLOTS = 8;
+const rootEl = document.documentElement;
+
 const rawInput = document.getElementById('rawInput');
 const ordenSelect = document.getElementById('ordenSelect');
+
+/* ---------- Tema claro / oscuro ---------- */
+
+function tema() {
+  return rootEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+}
+
+function aplicarTema(t) {
+  rootEl.setAttribute('data-theme', t);
+  document.getElementById('btnTheme').textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('tf_theme', t);
+  if (datosOrdenados.length) dibujarGrafica();
+}
+
+(function initTema() {
+  const guardado = localStorage.getItem('tf_theme');
+  const preferido = guardado || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  aplicarTema(preferido);
+})();
+
+document.getElementById('btnTheme').addEventListener('click', () => {
+  aplicarTema(tema() === 'dark' ? 'light' : 'dark');
+});
+
+function token(nombre) {
+  return getComputedStyle(rootEl).getPropertyValue(nombre).trim();
+}
+
+function paletaCategorica() {
+  const out = [];
+  for (let i = 1; i <= CATEGORICAL_SLOTS; i++) out.push(token(`--series-${i}`));
+  return out;
+}
+
+/* ---------- Eventos de UI ---------- */
 
 document.getElementById('btnCalcular').addEventListener('click', generarTabla);
 document.getElementById('btnLimpiar').addEventListener('click', () => {
   rawInput.value = '';
+  datosOrdenados = [];
   document.getElementById('tablaBox').innerHTML = '<div class="empty">Todavía no hay datos cargados.</div>';
   document.getElementById('resumenBox').innerHTML = '<div class="empty">Generá la tabla para ver el resumen (n, k, moda, etc.)</div>';
   document.getElementById('exportRow').style.display = 'none';
   document.getElementById('chartExportRow').style.display = 'none';
+  document.getElementById('chartLegend').innerHTML = '';
   if (chart) { chart.destroy(); chart = null; }
 });
 ordenSelect.addEventListener('change', () => { if (datosOrdenados.length) generarTabla(); });
@@ -279,7 +424,6 @@ document.getElementById('fileInput').addEventListener('change', (e) => {
   const reader = new FileReader();
   reader.onload = (evt) => {
     let text = evt.target.result;
-    // Si parece CSV con varias columnas, tomamos solo la primera columna
     const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
     const valores = lines.map(l => l.split(',')[0].trim()).filter(v => v !== '');
     rawInput.value = valores.join(', ');
@@ -300,14 +444,8 @@ document.querySelectorAll('.tab').forEach(tab => {
 document.getElementById('btnExportCSV').addEventListener('click', exportarCSV);
 document.getElementById('btnExportPNG').addEventListener('click', exportarPNG);
 
-function parseDatos(texto) {
-  return texto
-    .split(/[\n,;]+|\s{2,}|(?<=\S)\s(?=\S)/)
-    .map(v => v.trim())
-    .filter(v => v !== '');
-}
+/* ---------- Parseo y cálculo ---------- */
 
-// Más robusto: separar por coma, punto y coma o salto de línea; si no hay ninguno, separar por espacios
 function tokenizar(texto) {
   let partes;
   if (/[,;\n]/.test(texto)) {
@@ -365,50 +503,56 @@ function generarTabla() {
   });
 
   renderTabla(n, claves.length, todosNumericos);
-  renderResumen(n, claves.length, valores, conteo);
+  renderResumen(n, claves.length, conteo);
   dibujarGrafica();
 
   document.getElementById('exportRow').style.display = 'flex';
   document.getElementById('chartExportRow').style.display = 'flex';
 }
 
-function renderTabla(n, k, esNumerico) {
-  const box = document.getElementById('tablaBox');
-  let html = `<table>
-    <thead>
-      <tr>
-        <th>${esNumerico ? 'Valor (xi)' : 'Categoría'}</th>
-        <th>Frec. absoluta (fi)</th>
-        <th>Frec. relativa (hi)</th>
-        <th>Frec. relativa % (hi%)</th>
-        <th>Frec. acumulada (Fi)</th>
-        <th>Frec. acum. % (Hi%)</th>
-      </tr>
-    </thead>
-    <tbody>`;
-  datosOrdenados.forEach(d => {
-    html += `<tr>
-      <td>${d.valor}</td>
-      <td>${d.fi}</td>
-      <td>${d.hi.toFixed(4)}</td>
-      <td>${d.hiPct.toFixed(2)}%</td>
-      <td>${d.Fi}</td>
-      <td>${d.HiPct.toFixed(2)}%</td>
-    </tr>`;
-  });
-  html += `<tr>
-      <td>Total</td>
-      <td>${n}</td>
-      <td>1.0000</td>
-      <td>100.00%</td>
-      <td>—</td>
-      <td>—</td>
-    </tr>`;
-  html += `</tbody></table>`;
-  box.innerHTML = html;
+/* ---------- Render de tabla y resumen (DOM seguro, sin innerHTML con datos del usuario) ---------- */
+
+function celda(tag, texto) {
+  const el = document.createElement(tag);
+  el.textContent = texto;
+  return el;
 }
 
-function renderResumen(n, k, valores, conteo) {
+function renderTabla(n, k, esNumerico) {
+  const box = document.getElementById('tablaBox');
+  box.innerHTML = '';
+
+  const table = document.createElement('table');
+
+  const thead = document.createElement('thead');
+  const trHead = document.createElement('tr');
+  [esNumerico ? 'Valor (xi)' : 'Categoría', 'Frec. absoluta (fi)', 'Frec. relativa (hi)',
+   'Frec. relativa % (hi%)', 'Frec. acumulada (Fi)', 'Frec. acum. % (Hi%)']
+    .forEach(txt => trHead.appendChild(celda('th', txt)));
+  thead.appendChild(trHead);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  datosOrdenados.forEach(d => {
+    const tr = document.createElement('tr');
+    tr.appendChild(celda('td', d.valor));
+    tr.appendChild(celda('td', String(d.fi)));
+    tr.appendChild(celda('td', d.hi.toFixed(4)));
+    tr.appendChild(celda('td', d.hiPct.toFixed(2) + '%'));
+    tr.appendChild(celda('td', String(d.Fi)));
+    tr.appendChild(celda('td', d.HiPct.toFixed(2) + '%'));
+    tbody.appendChild(tr);
+  });
+
+  const trTotal = document.createElement('tr');
+  ['Total', String(n), '1.0000', '100.00%', '—', '—'].forEach(txt => trTotal.appendChild(celda('td', txt)));
+  tbody.appendChild(trTotal);
+
+  table.appendChild(tbody);
+  box.appendChild(table);
+}
+
+function renderResumen(n, k, conteo) {
   let modaFi = -1, moda = [];
   conteo.forEach((fi, valor) => {
     if (fi > modaFi) { modaFi = fi; moda = [valor]; }
@@ -416,37 +560,117 @@ function renderResumen(n, k, valores, conteo) {
   });
 
   const box = document.getElementById('resumenBox');
-  box.innerHTML = `
-    <div class="stats">
-      <div class="stat">n (total datos)<span>${n}</span></div>
-      <div class="stat">k (categorías)<span>${k}</span></div>
-      <div class="stat">Moda<span style="font-size:14px;">${moda.join(', ')} (fi=${modaFi})</span></div>
-    </div>`;
+  box.innerHTML = '';
+  const stats = document.createElement('div');
+  stats.className = 'stats';
+
+  function statTile(label, valor) {
+    const div = document.createElement('div');
+    div.className = 'stat';
+    div.appendChild(document.createTextNode(label));
+    const val = document.createElement('span');
+    val.className = 'value';
+    val.textContent = valor;
+    div.appendChild(val);
+    return div;
+  }
+
+  stats.appendChild(statTile('n (total datos)', String(n)));
+  stats.appendChild(statTile('k (categorías)', String(k)));
+  stats.appendChild(statTile('Moda (fi=' + modaFi + ')', moda.join(', ')));
+  box.appendChild(stats);
 }
+
+/* ---------- Gráficas (Chart.js) ---------- */
 
 function dibujarGrafica() {
   const ctx = document.getElementById('chartCanvas').getContext('2d');
   const labels = datosOrdenados.map(d => d.valor);
   const data = datosOrdenados.map(d => d.fi);
-  const colores = generarColores(labels.length);
+
+  const inkSecondary = token('--ink-secondary');
+  const inkMuted = token('--ink-muted');
+  const gridline = token('--gridline');
+  const baseline = token('--baseline');
+  const surfaceCard = token('--surface-card');
+  const border = token('--border');
+  const ink = token('--ink');
+  const accent = token('--accent');
+
+  Chart.defaults.font.family = "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+  Chart.defaults.color = inkSecondary;
 
   if (chart) chart.destroy();
+  document.getElementById('chartLegend').innerHTML = '';
+
+  const tooltipBase = {
+    backgroundColor: surfaceCard,
+    titleColor: inkSecondary,
+    bodyColor: ink,
+    bodyFont: { weight: '700', size: 13 },
+    borderColor: border,
+    borderWidth: 1,
+    cornerRadius: 10,
+    padding: 10,
+    boxPadding: 4,
+    titleFont: { weight: '600', size: 12 }
+  };
 
   if (tipoActual === 'pie') {
+    // Serie categórica: identidad importa -> paleta de 8 tonos en orden fijo.
+    // Más de 8 categorías: se pliegan en "Otros" (gris, sin robar un tono existente).
+    const base = paletaCategorica();
+    const otherColor = token('--series-other');
+    let pieLabels = labels, pieData = data;
+    let colores;
+
+    if (labels.length > CATEGORICAL_SLOTS) {
+      const indexado = datosOrdenados.map((d, i) => ({ ...d, i })).sort((a, b) => b.fi - a.fi);
+      const top = indexado.slice(0, CATEGORICAL_SLOTS - 1);
+      const resto = indexado.slice(CATEGORICAL_SLOTS - 1);
+      const restoSuma = resto.reduce((s, d) => s + d.fi, 0);
+      pieLabels = top.map(d => d.valor).concat(['Otros']);
+      pieData = top.map(d => d.fi).concat([restoSuma]);
+      colores = base.slice(0, CATEGORICAL_SLOTS - 1).concat([otherColor]);
+    } else {
+      colores = base.slice(0, labels.length);
+    }
+
     chart = new Chart(ctx, {
       type: 'pie',
       data: {
-        labels,
-        datasets: [{ data, backgroundColor: colores }]
+        labels: pieLabels,
+        datasets: [{
+          data: pieData,
+          backgroundColor: colores,
+          borderColor: surfaceCard,
+          borderWidth: 2,
+          hoverOffset: 6
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'right' } }
+        plugins: {
+          legend: { display: false }, // legend propia en #chartLegend (más control de estilo)
+          tooltip: {
+            ...tooltipBase,
+            callbacks: {
+              label(item) {
+                const total = item.dataset.data.reduce((a, b) => a + b, 0);
+                const pct = total ? (item.parsed / total * 100).toFixed(1) : '0.0';
+                return ` ${item.parsed}  (${pct}%)`;
+              }
+            }
+          }
+        }
       }
     });
+
+    renderLegendPie(pieLabels, pieData, colores);
+
   } else {
-    // bar y histogram comparten estructura; histogram sin espacio entre barras
+    // Serie única (frecuencia): un solo tono de acento, la identidad ya la da el eje X.
     chart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -454,36 +678,89 @@ function dibujarGrafica() {
         datasets: [{
           label: 'Frecuencia absoluta (fi)',
           data,
-          backgroundColor: '#4f46e5',
-          borderRadius: tipoActual === 'histogram' ? 0 : 6,
-          categoryPercentage: tipoActual === 'histogram' ? 1.0 : 0.8,
-          barPercentage: tipoActual === 'histogram' ? 1.0 : 0.85,
+          backgroundColor: accent,
+          hoverBackgroundColor: accent,
+          borderRadius: tipoActual === 'histogram'
+            ? 0
+            : { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+          borderSkipped: false,
+          categoryPercentage: tipoActual === 'histogram' ? 1.0 : 0.75,
+          barPercentage: tipoActual === 'histogram' ? 1.0 : 0.9,
+          maxBarThickness: tipoActual === 'histogram' ? undefined : 48
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false }, // una sola serie -> el título de la tarjeta ya la nombra
+          tooltip: {
+            ...tooltipBase,
+            displayColors: false,
+            callbacks: {
+              title(items) { return items[0].label; },
+              label(item) { return `fi = ${item.parsed.y}`; }
+            }
+          }
+        },
         scales: {
-          y: { beginAtZero: true, title: { display: true, text: 'Frecuencia absoluta' } },
-          x: { title: { display: true, text: 'Valor / Categoría' } }
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0, color: inkMuted },
+            grid: { color: gridline, drawTicks: false },
+            border: { color: baseline },
+            title: { display: true, text: 'Frecuencia absoluta', color: inkSecondary, font: { size: 12, weight: '600' } }
+          },
+          x: {
+            grid: { display: false },
+            border: { color: baseline },
+            ticks: { color: inkMuted },
+            title: { display: true, text: 'Valor / Categoría', color: inkSecondary, font: { size: 12, weight: '600' } }
+          }
         }
       }
     });
   }
 }
 
-function generarColores(n) {
-  const base = ['#4f46e5','#7c3aed','#ec4899','#f97316','#22c55e','#06b6d4','#eab308','#ef4444','#8b5cf6','#14b8a6'];
-  const out = [];
-  for (let i = 0; i < n; i++) out.push(base[i % base.length]);
-  return out;
+function renderLegendPie(labels, data, colores) {
+  const box = document.getElementById('chartLegend');
+  box.innerHTML = '';
+  const total = data.reduce((a, b) => a + b, 0);
+  labels.forEach((label, i) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+
+    const swatch = document.createElement('span');
+    swatch.className = 'legend-swatch';
+    swatch.style.background = colores[i];
+    item.appendChild(swatch);
+
+    const text = document.createElement('span');
+    text.textContent = label;
+    item.appendChild(text);
+
+    const val = document.createElement('span');
+    val.className = 'legend-value';
+    const pct = total ? (data[i] / total * 100).toFixed(1) : '0.0';
+    val.textContent = `${data[i]} (${pct}%)`;
+    item.appendChild(val);
+
+    box.appendChild(item);
+  });
+}
+
+/* ---------- Exportación ---------- */
+
+function csvCelda(v) {
+  const s = String(v);
+  return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 
 function exportarCSV() {
   let csv = 'Valor,Frecuencia absoluta,Frecuencia relativa,Frecuencia relativa %,Frecuencia acumulada,Frecuencia acumulada %\n';
   datosOrdenados.forEach(d => {
-    csv += `${d.valor},${d.fi},${d.hi.toFixed(4)},${d.hiPct.toFixed(2)},${d.Fi},${d.HiPct.toFixed(2)}\n`;
+    csv += [csvCelda(d.valor), d.fi, d.hi.toFixed(4), d.hiPct.toFixed(2), d.Fi, d.HiPct.toFixed(2)].join(',') + '\n';
   });
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);

@@ -11,3 +11,6 @@ latex/*.toc
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Configuración local de editor
+.vscode/
