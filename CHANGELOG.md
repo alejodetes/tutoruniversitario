@@ -3,6 +3,14 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.2.0] - 2026-08-10
+### Agregado
+- Selector de "Métrica" en las gráficas de barras/histograma: además de la
+  frecuencia absoluta (fi) por defecto, se puede habilitar la frecuencia
+  relativa % (hi%), la acumulada (Fi) o la acumulada % (Hi%) como el valor
+  graficado, con eje y tooltip que se adaptan (formato de porcentaje
+  incluido). El pastel sigue mostrando siempre proporciones de fi.
+
 ## [1.1.0] - 2026-08-10
 ### Cambiado
 - Rediseño completo de la interfaz: sistema de tokens de color claro/oscuro

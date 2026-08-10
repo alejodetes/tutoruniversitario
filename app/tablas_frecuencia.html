@@ -257,6 +257,9 @@
   }
   .tab:hover{color:var(--ink);}
   .tab.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .tabs-sm{gap:4px;margin-bottom:0;}
+  .tabs-sm .tab{padding:5px 11px;font-size:12px;}
+  #metricaRow{margin-top:0;margin-bottom:16px;}
 
   .chart-layout{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;}
   .chart-box{position:relative;height:360px;flex:1 1 420px;min-width:280px;}
@@ -285,7 +288,7 @@
       <p>Probabilidad y Estadística · 4to semestre</p>
     </div>
     <div class="header-right">
-      <span class="badge">v1.1.0</span>
+      <span class="badge">v1.2.0</span>
       <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
     </div>
   </header>
@@ -343,6 +346,15 @@
         <div class="tab" data-tipo="histogram">Histograma</div>
         <div class="tab" data-tipo="pie">Circular (pastel)</div>
       </div>
+      <div class="row" id="metricaRow">
+        <label style="margin:0;">Métrica:</label>
+        <div class="tabs tabs-sm" id="metricaTabs">
+          <div class="tab active" data-metrica="fi">fi</div>
+          <div class="tab" data-metrica="hiPct">hi%</div>
+          <div class="tab" data-metrica="Fi">Fi</div>
+          <div class="tab" data-metrica="HiPct">Hi%</div>
+        </div>
+      </div>
       <div class="chart-layout">
         <div class="chart-box">
           <canvas id="chartCanvas"></canvas>
@@ -363,6 +375,16 @@
 let datosOrdenados = []; // [{valor, fi, hi, hiPct, Fi, HiPct}]
 let chart = null;
 let tipoActual = 'bar';
+let metricaActual = 'fi';
+
+// Métricas configurables para barras/histograma: la frecuencia no tiene que ser
+// siempre absoluta -> el usuario habilita/deshabilita cuál se grafica.
+const METRICAS = {
+  fi:    { campo: 'fi',    corto: 'fi',   etiqueta: 'Frecuencia absoluta (fi)',      eje: 'Frecuencia absoluta',      esPct: false },
+  hiPct: { campo: 'hiPct', corto: 'hi%',  etiqueta: 'Frecuencia relativa % (hi%)',   eje: 'Frecuencia relativa (%)',  esPct: true  },
+  Fi:    { campo: 'Fi',    corto: 'Fi',   etiqueta: 'Frecuencia acumulada (Fi)',     eje: 'Frecuencia acumulada',     esPct: false },
+  HiPct: { campo: 'HiPct', corto: 'Hi%',  etiqueta: 'Frec. acumulada % (Hi%)',       eje: 'Frecuencia acumulada (%)', esPct: true  }
+};
 
 const CATEGORICAL_SLOTS = 8;
 const rootEl = document.documentElement;
@@ -432,11 +454,22 @@ document.getElementById('fileInput').addEventListener('change', (e) => {
   reader.readAsText(file);
 });
 
-document.querySelectorAll('.tab').forEach(tab => {
+document.querySelectorAll('.tabs:not(#metricaTabs) > .tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tabs:not(#metricaTabs) > .tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     tipoActual = tab.dataset.tipo;
+    // El pastel siempre grafica proporciones (fi); la métrica configurable solo aplica a barras/histograma.
+    document.getElementById('metricaRow').style.display = tipoActual === 'pie' ? 'none' : 'flex';
+    if (datosOrdenados.length) dibujarGrafica();
+  });
+});
+
+document.querySelectorAll('#metricaTabs .tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#metricaTabs .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    metricaActual = tab.dataset.metrica;
     if (datosOrdenados.length) dibujarGrafica();
   });
 });
@@ -670,14 +703,18 @@ function dibujarGrafica() {
     renderLegendPie(pieLabels, pieData, colores);
 
   } else {
-    // Serie única (frecuencia): un solo tono de acento, la identidad ya la da el eje X.
+    // Serie única: un solo tono de acento, la identidad ya la da el eje X.
+    // La métrica graficada (fi, hi%, Fi, Hi%) la elige el usuario en "Métrica".
+    const meta = METRICAS[metricaActual];
+    const metricData = datosOrdenados.map(d => meta.esPct ? Number(d[meta.campo].toFixed(2)) : d[meta.campo]);
+
     chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels,
         datasets: [{
-          label: 'Frecuencia absoluta (fi)',
-          data,
+          label: meta.etiqueta,
+          data: metricData,
           backgroundColor: accent,
           hoverBackgroundColor: accent,
           borderRadius: tipoActual === 'histogram'
@@ -699,17 +736,21 @@ function dibujarGrafica() {
             displayColors: false,
             callbacks: {
               title(items) { return items[0].label; },
-              label(item) { return `fi = ${item.parsed.y}`; }
+              label(item) { return `${meta.corto} = ${item.parsed.y}${meta.esPct ? '%' : ''}`; }
             }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { precision: 0, color: inkMuted },
+            ticks: {
+              color: inkMuted,
+              precision: meta.esPct ? undefined : 0,
+              callback: meta.esPct ? (v) => v + '%' : undefined
+            },
             grid: { color: gridline, drawTicks: false },
             border: { color: baseline },
-            title: { display: true, text: 'Frecuencia absoluta', color: inkSecondary, font: { size: 12, weight: '600' } }
+            title: { display: true, text: meta.eje, color: inkSecondary, font: { size: 12, weight: '600' } }
           },
           x: {
             grid: { display: false },
