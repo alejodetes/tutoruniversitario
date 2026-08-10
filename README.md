@@ -1,6 +1,6 @@
 # Tutor — Probabilidad y Estadística
 
-**Versión:** 1.4.0
+**Versión:** 1.5.0
 **Materia:** Probabilidad y Estadística — 4to semestre
 **Estado:** en desarrollo activo (el profesor aún no publicó el temario formal)
 
@@ -22,7 +22,9 @@ TablasFrecuencia_ProbEstadistica/
 ├── VERSION                 versión actual en texto plano
 ├── app/
 │   ├── inicio.html              menú central del tutor (abrir con doble clic)
-│   └── tablas_frecuencia.html   herramienta: tablas de frecuencia
+│   ├── tablas_frecuencia.html   herramienta: tablas de frecuencia
+│   ├── calendario.html          herramienta: calendario (entregas, parciales, reuniones)
+│   └── correos.html             herramienta: correos importantes
 ├── latex/
 │   ├── plantilla_informe.tex    plantilla para informes de entrega
 │   ├── README.md                cómo compilarla
@@ -53,6 +55,21 @@ cargar la librería de gráficas). Permite:
 
 Por ahora cubre datos cualitativos y discretos. Los intervalos de clase para
 datos continuos quedan para una próxima versión.
+
+## Herramienta: calendario (`app/calendario.html`)
+
+Lista cronológica de entregas y parciales, tomados del calendario del campus
+virtual de la UAN, más un arreglo `REUNIONES` para sumar a mano otras fechas
+relevantes (una reunión propuesta, por ejemplo). Los datos están embebidos
+directamente en el HTML — no hay conexión en vivo a Google Calendar desde el
+navegador (sería inseguro exponer credenciales OAuth en un archivo local) —
+así que se actualizan editando el arreglo cuando se conversa sobre el tema.
+
+## Herramienta: correos importantes (`app/correos.html`)
+
+Lista de correos marcados como importantes a mano durante el chat, sin
+filtro automático de Gmail. Arranca vacía; los correos se van agregando al
+arreglo `CORREOS` del HTML a medida que se piden.
 
 ## Plantilla de informes (`latex/`)
 

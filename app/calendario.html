@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendario — Tutor</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-page:#f9f9f7;
+    --surface-card:#fcfcfb;
+    --surface-sunken:#f2f1ee;
+    --ink:#0b0b0b;
+    --ink-secondary:#52514e;
+    --ink-muted:#898781;
+    --gridline:#e1e0d9;
+    --border:rgba(11,11,11,0.10);
+    --accent:#2a78d6;
+    --accent-ink:#ffffff;
+    --accent-soft-bg:rgba(42,120,214,0.12);
+    --accent-soft-ink:#1c5cab;
+    --warn-soft-bg:rgba(235,104,52,0.12);
+    --warn-soft-ink:#b4501e;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(11,11,11,0.04), 0 8px 24px -16px rgba(11,11,11,0.18);
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --surface-page:#0d0d0d;
+    --surface-card:#1a1a19;
+    --surface-sunken:#141413;
+    --ink:#ffffff;
+    --ink-secondary:#c3c2b7;
+    --ink-muted:#898781;
+    --gridline:#2c2c2a;
+    --border:rgba(255,255,255,0.10);
+    --accent:#3987e5;
+    --accent-ink:#ffffff;
+    --accent-soft-bg:rgba(57,135,229,0.16);
+    --accent-soft-ink:#8fc0ff;
+    --warn-soft-bg:rgba(217,89,38,0.18);
+    --warn-soft-ink:#f0966a;
+    --shadow:0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -18px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:var(--surface-page);
+    color:var(--ink);
+    padding:28px 20px 60px;
+    transition: background .2s ease, color .2s ease;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  header h1{font-size:23px;margin:0;font-weight:700;letter-spacing:-.01em;}
+  header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
+  .menu-link{display:inline-block;font-size:12.5px;font-weight:600;color:var(--ink-secondary);text-decoration:none;margin-bottom:6px;}
+  .menu-link:hover{color:var(--accent);}
+  .theme-toggle{
+    width:36px;height:36px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--surface-card);
+    color:var(--ink-secondary);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-size:16px;
+    line-height:1;
+  }
+  .theme-toggle:hover{background:var(--surface-sunken);color:var(--ink);}
+  .theme-toggle:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .list{display:flex;flex-direction:column;gap:12px;}
+  .event{
+    background:var(--surface-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    box-shadow: var(--shadow);
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .event .date-badge{
+    flex-shrink:0;
+    width:52px;
+    text-align:center;
+    background:var(--surface-sunken);
+    border-radius:10px;
+    padding:8px 4px;
+  }
+  .event .date-badge .day{display:block;font-size:19px;font-weight:700;line-height:1;}
+  .event .date-badge .mon{display:block;font-size:10.5px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:3px;}
+  .event .body{flex:1;min-width:0;}
+  .event h2{font-size:14.5px;margin:0 0 4px;font-weight:700;}
+  .event .meta{font-size:12px;color:var(--ink-muted);margin-bottom:6px;}
+  .event p{margin:0;font-size:13px;color:var(--ink-secondary);line-height:1.5;}
+  .tag{
+    display:inline-block;
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    padding:2px 8px;
+    border-radius:999px;
+    margin-left:8px;
+    vertical-align:middle;
+  }
+  .tag.entrega{background:var(--warn-soft-bg);color:var(--warn-soft-ink);}
+  .tag.parcial{background:var(--accent-soft-bg);color:var(--accent-soft-ink);}
+  .tag.reunion{background:var(--surface-sunken);color:var(--ink-secondary);}
+
+  .empty{color:var(--ink-muted);font-size:13px;text-align:center;padding:34px 10px;}
+  footer{text-align:center;color:var(--ink-muted);font-size:12px;margin-top:32px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <a class="menu-link" href="inicio.html">← Menú</a>
+      <h1>📅 Calendario</h1>
+      <p>Probabilidad y Estadística · 4to semestre</p>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
+    </div>
+  </header>
+
+  <div class="list" id="lista"></div>
+
+  <footer>Fechas del calendario UAN (campus virtual) + reuniones agregadas a mano. Se actualiza cuando hablamos.</footer>
+</div>
+
+<script>
+/* Entregas y parciales importados del calendario del campus virtual UAN.
+   No incluir tokens/URLs de exportación acá: solo título, curso y fecha. */
+const EVENTOS_UAN = [
+  { titulo: 'Vencimiento de TallerExploracion.1', curso: 'Aplicaciones Móviles', descripcion: 'Taller 1 de Aplicaciones Móviles.', fecha: '2026-08-31T23:59:00-05:00', tipo: 'entrega' },
+  { titulo: 'Se abre Parcial 1', descripcion: 'Apertura del primer parcial.', fecha: '2026-09-01T18:00:00-05:00', tipo: 'parcial' },
+  { titulo: 'Se cierra Parcial 1', descripcion: 'Cierre del primer parcial.', fecha: '2026-09-01T23:59:00-05:00', tipo: 'parcial' },
+  { titulo: 'Vencimiento de Taller 2', curso: 'Aplicaciones Móviles', descripcion: 'Taller 2 de Aplicaciones Móviles.', fecha: '2026-09-15T23:59:00-05:00', tipo: 'entrega' },
+  { titulo: 'Vencimiento de Taller 3', descripcion: 'Taller 3.', fecha: '2026-09-24T23:59:00-05:00', tipo: 'entrega' },
+  { titulo: 'Se abre Parcial 2', descripcion: 'Apertura del segundo parcial.', fecha: '2026-10-06T20:00:00-05:00', tipo: 'parcial' },
+  { titulo: 'Se cierra Parcial 2', descripcion: 'Cierre del segundo parcial.', fecha: '2026-10-06T22:00:00-05:00', tipo: 'parcial' }
+];
+
+/* Reuniones u otras fechas relevantes agregadas a mano en el chat. */
+const REUNIONES = [];
+
+const TODOS = [...EVENTOS_UAN.map(e => ({ ...e, fuente: 'uan' })), ...REUNIONES.map(e => ({ ...e, fuente: 'reunion' }))]
+  .filter(e => new Date(e.fecha) >= new Date(new Date().toDateString()))
+  .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+const lista = document.getElementById('lista');
+
+if (TODOS.length === 0) {
+  const p = document.createElement('p');
+  p.className = 'empty';
+  p.textContent = 'No hay fechas próximas cargadas todavía.';
+  lista.appendChild(p);
+} else {
+  TODOS.forEach(ev => {
+    const d = new Date(ev.fecha);
+
+    const card = document.createElement('div');
+    card.className = 'event';
+
+    const badge = document.createElement('div');
+    badge.className = 'date-badge';
+    const day = document.createElement('span');
+    day.className = 'day';
+    day.textContent = String(d.getDate()).padStart(2, '0');
+    const mon = document.createElement('span');
+    mon.className = 'mon';
+    mon.textContent = MESES[d.getMonth()];
+    badge.append(day, mon);
+
+    const body = document.createElement('div');
+    body.className = 'body';
+
+    const h2 = document.createElement('h2');
+    h2.textContent = ev.titulo;
+    const tag = document.createElement('span');
+    tag.className = 'tag ' + ev.tipo;
+    tag.textContent = ev.tipo === 'entrega' ? 'Entrega' : ev.tipo === 'parcial' ? 'Parcial' : 'Reunión';
+    h2.appendChild(tag);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const hora = d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+    meta.textContent = (ev.curso ? ev.curso + ' · ' : '') + hora;
+
+    const desc = document.createElement('p');
+    desc.textContent = ev.descripcion || '';
+
+    body.append(h2, meta, desc);
+    card.append(badge, body);
+    lista.appendChild(card);
+  });
+}
+
+/* ---------- Tema claro / oscuro (compartido con el resto del tutor) ---------- */
+const rootEl = document.documentElement;
+function tema() { return rootEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
+function aplicarTema(t) {
+  rootEl.setAttribute('data-theme', t);
+  document.getElementById('btnTheme').textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('tf_theme', t);
+}
+(function initTema() {
+  const guardado = localStorage.getItem('tf_theme');
+  const preferido = guardado || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  aplicarTema(preferido);
+})();
+document.getElementById('btnTheme').addEventListener('click', () => {
+  aplicarTema(tema() === 'dark' ? 'light' : 'dark');
+});
+</script>
+</body>
+</html>

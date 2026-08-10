@@ -3,6 +3,20 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.5.0] - 2026-08-10
+### Agregado
+- Herramienta "Calendario" (`app/calendario.html`): entregas y parciales
+  importados del calendario del campus virtual de la UAN, listados en
+  orden cronológico, más un arreglo `REUNIONES` para agregar a mano
+  reuniones u otras fechas relevantes. Los datos se embeben directamente
+  en el HTML (sin fetch a archivos externos, para que funcione abriendo
+  el archivo con doble clic) y se actualizan a mano en el chat — no hay
+  conexión en vivo a Google Calendar desde el navegador.
+- Herramienta "Correos importantes" (`app/correos.html`): lista de
+  correos que el usuario marca como importantes durante el chat, sin
+  filtro automático. Arranca vacía con un estado vacío explicativo.
+- Ambas herramientas sumadas al menú central (`app/inicio.html`).
+
 ## [1.4.0] - 2026-08-10
 ### Agregado
 - Menú central del tutor (`app/inicio.html`): punto de entrada de la app,
