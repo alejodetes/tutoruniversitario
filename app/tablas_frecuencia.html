@@ -195,6 +195,25 @@
   tr:last-child td{font-weight:700;border-top:2px solid var(--gridline);border-bottom:none;background:var(--surface-sunken);}
   .table-scroll{overflow-x:auto;}
 
+  .glosario{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+    gap:8px 20px;
+    margin:0 0 16px;
+    padding:12px 14px;
+    background:var(--surface-sunken);
+    border:1px solid var(--border);
+    border-radius:10px;
+  }
+  .glosario > div{display:flex;gap:6px;align-items:baseline;}
+  .glosario dt{
+    flex-shrink:0;
+    font-weight:700;
+    font-size:12.5px;
+    color:var(--accent);
+  }
+  .glosario dd{margin:0;font-size:12px;color:var(--ink-secondary);line-height:1.4;}
+
   .full{grid-column: 1 / -1;}
   .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
   .tab{
@@ -293,6 +312,12 @@
     <!-- TABLA -->
     <div class="card full">
       <h2><span class="num">3</span> Tabla de frecuencias</h2>
+      <dl class="glosario">
+        <div><dt>fi</dt><dd>Frecuencia absoluta: cuántas veces aparece el valor.</dd></div>
+        <div><dt>hi</dt><dd>Frecuencia relativa: proporción del total (fi ÷ n), mostrada en decimal y en porcentaje.</dd></div>
+        <div><dt>Fi</dt><dd>Frecuencia acumulada: suma progresiva de fi hasta esa fila.</dd></div>
+        <div><dt>Hi%</dt><dd>Frecuencia acumulada porcentual: suma progresiva de hi%.</dd></div>
+      </dl>
       <div id="tablaBox" class="table-scroll">
         <div class="empty">Todavía no hay datos cargados.</div>
       </div>
@@ -557,7 +582,7 @@ function renderTabla(n, k, esNumerico) {
   const thead = document.createElement('thead');
   const trHead = document.createElement('tr');
   [esNumerico ? 'Valor (xi)' : 'Categoría', 'Frec. absoluta (fi)', 'Frec. relativa (hi)',
-   'Frec. relativa % (hi%)', 'Frec. acumulada (Fi)', 'Frec. acum. % (Hi%)']
+   'Frec. acumulada (Fi)', 'Frec. acum. % (Hi%)']
     .forEach(txt => trHead.appendChild(celda('th', txt)));
   thead.appendChild(trHead);
   table.appendChild(thead);
@@ -567,15 +592,14 @@ function renderTabla(n, k, esNumerico) {
     const tr = document.createElement('tr');
     tr.appendChild(celda('td', d.valor));
     tr.appendChild(celda('td', String(d.fi)));
-    tr.appendChild(celda('td', d.hi.toFixed(4)));
-    tr.appendChild(celda('td', d.hiPct.toFixed(2) + '%'));
+    tr.appendChild(celda('td', `${d.hi.toFixed(4)} (${d.hiPct.toFixed(4)}%)`));
     tr.appendChild(celda('td', String(d.Fi)));
     tr.appendChild(celda('td', d.HiPct.toFixed(2) + '%'));
     tbody.appendChild(tr);
   });
 
   const trTotal = document.createElement('tr');
-  ['Total', String(n), '1.0000', '100.00%', '—', '—'].forEach(txt => trTotal.appendChild(celda('td', txt)));
+  ['Total', String(n), '1.0000 (100.0000%)', '—', '—'].forEach(txt => trTotal.appendChild(celda('td', txt)));
   tbody.appendChild(trTotal);
 
   table.appendChild(tbody);
