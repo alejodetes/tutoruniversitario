@@ -144,22 +144,22 @@
   <footer>Tutor UAN · recordatorios manuales</footer>
 </div>
 
-<script>
-const STORAGE_KEY = 'tf_recordatorios';
+<script type="module">
+import { syncDoc } from './assets/sync.js';
+
 const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
-function cargar() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
-}
-function guardar(items) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
 function nuevoId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-let items = cargar();
+let items = [];
+const itemsSync = syncDoc('recordatorios', 'items', (valor) => {
+  items = valor;
+  render();
+});
+function guardar(v) { itemsSync.guardar(v); }
+
 const listaBox = document.getElementById('listaBox');
 
 function tagLabel(tipo) {

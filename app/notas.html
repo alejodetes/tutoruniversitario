@@ -111,21 +111,19 @@
   <footer>Tutor UAN · notas de corte</footer>
 </div>
 
-<script>
-const STORAGE_KEY = 'tf_notas_cursos';
+<script type="module">
+import { syncDoc } from './assets/sync.js';
 
-function cargarCursos() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
-}
-function guardarCursos(cursos) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cursos));
-}
 function nuevoId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-let cursos = cargarCursos();
+let cursos = [];
+const cursosSync = syncDoc('notas_cursos', 'cursos', (valor) => {
+  cursos = valor;
+  render();
+});
+function guardarCursos(c) { cursosSync.guardar(c); }
 
 const cursosBox = document.getElementById('cursosBox');
 
