@@ -897,5 +897,10 @@ function exportarPNG() {
   a.click();
 }
 </script>
+
+<script type="module">
+import { protegerPagina } from './assets/auth.js';
+protegerPagina(() => {});
+</script>
 </body>
 </html>

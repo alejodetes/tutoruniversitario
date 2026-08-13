@@ -112,6 +112,7 @@
 </div>
 
 <script type="module">
+import { protegerPagina } from './assets/auth.js';
 import { syncDoc } from './assets/sync.js';
 
 function nuevoId() {
@@ -119,11 +120,8 @@ function nuevoId() {
 }
 
 let cursos = [];
-const cursosSync = syncDoc('notas_cursos', 'cursos', (valor) => {
-  cursos = valor;
-  render();
-});
-function guardarCursos(c) { cursosSync.guardar(c); }
+let cursosSync = null;
+function guardarCursos(c) { if (cursosSync) cursosSync.guardar(c); }
 
 const cursosBox = document.getElementById('cursosBox');
 
@@ -333,6 +331,13 @@ function aplicarTema(t) {
 })();
 btnTheme.addEventListener('click', () => {
   aplicarTema(tema() === 'dark' ? 'light' : 'dark');
+});
+
+protegerPagina((user) => {
+  cursosSync = syncDoc(user.uid, 'notas_cursos', 'cursos', (valor) => {
+    cursos = valor;
+    render();
+  });
 });
 </script>
 </body>

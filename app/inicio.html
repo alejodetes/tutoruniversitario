@@ -399,5 +399,10 @@ btnTheme.addEventListener('click', () => {
   aplicarTema(tema() === 'dark' ? 'light' : 'dark');
 });
 </script>
+
+<script type="module">
+import { protegerPagina } from './assets/auth.js';
+protegerPagina(() => {});
+</script>
 </body>
 </html>

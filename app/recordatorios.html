@@ -145,6 +145,7 @@
 </div>
 
 <script type="module">
+import { protegerPagina } from './assets/auth.js';
 import { syncDoc } from './assets/sync.js';
 
 const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
@@ -154,11 +155,8 @@ function nuevoId() {
 }
 
 let items = [];
-const itemsSync = syncDoc('recordatorios', 'items', (valor) => {
-  items = valor;
-  render();
-});
-function guardar(v) { itemsSync.guardar(v); }
+let itemsSync = null;
+function guardar(v) { if (itemsSync) itemsSync.guardar(v); }
 
 const listaBox = document.getElementById('listaBox');
 
@@ -295,6 +293,13 @@ function aplicarTema(t) {
 })();
 btnTheme.addEventListener('click', () => {
   aplicarTema(tema() === 'dark' ? 'light' : 'dark');
+});
+
+protegerPagina((user) => {
+  itemsSync = syncDoc(user.uid, 'recordatorios', 'items', (valor) => {
+    items = valor;
+    render();
+  });
 });
 </script>
 </body>

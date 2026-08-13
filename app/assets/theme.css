@@ -106,6 +106,7 @@ header{
 }
 header h1{font-size:22px;margin:0;font-weight:800;letter-spacing:-.01em;}
 header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
+.header-right{display:flex;align-items:center;gap:8px;}
 @media (min-width:640px){
   header h1{font-size:25px;}
 }
@@ -175,3 +176,76 @@ footer{text-align:center;color:var(--ink-muted);font-size:12px;margin-top:32px;}
   from{opacity:0;transform:translateY(10px);}
   to{opacity:1;transform:translateY(0);}
 }
+
+/* ---------- Login (Google) ---------- */
+.auth-gate{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:var(--surface-page);
+}
+.auth-card{
+  width:100%;
+  max-width:340px;
+  text-align:center;
+  background:var(--surface-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:32px 28px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+.auth-card [data-icon]{color:var(--accent);margin-bottom:6px;}
+.auth-card h2{font-family:'Space Grotesk', system-ui, sans-serif;margin:0;font-size:20px;}
+.auth-card p{margin:0 0 14px;font-size:13px;color:var(--ink-secondary);line-height:1.55;}
+.google-btn{
+  width:100%;
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;
+  padding:11px 16px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  background:var(--surface-page);
+  color:var(--ink);
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.google-btn:hover{background:var(--surface-raised);border-color:var(--accent);}
+.google-btn:active{transform:scale(.98);}
+.google-btn:disabled{opacity:.6;cursor:default;}
+.auth-error{color:var(--warn-soft-ink);font-size:12.5px;margin:10px 0 0;}
+
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px;
+  border-radius:999px;
+  background:var(--surface-sunken);
+  border:1px solid var(--border);
+}
+.user-chip img{
+  width:26px;height:26px;
+  border-radius:50%;
+  display:block;
+}
+.user-chip .btn-logout{
+  width:26px;height:26px;
+  border-radius:50%;
+  border:none;
+  background:transparent;
+  color:var(--ink-muted);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.user-chip .btn-logout:hover{background:var(--surface-raised);color:var(--warn-soft-ink);}
