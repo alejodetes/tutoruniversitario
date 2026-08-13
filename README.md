@@ -1,6 +1,6 @@
 # Tutor — Probabilidad y Estadística
 
-**Versión:** 1.7.0
+**Versión:** 1.8.0
 **Materia:** Probabilidad y Estadística — 4to semestre
 **Estado:** en desarrollo activo (el profesor aún no publicó el temario formal)
 
@@ -25,8 +25,8 @@ TablasFrecuencia_ProbEstadistica/
 │   │   └── theme.css            tokens y estilos base compartidos por todo el tutor
 │   ├── inicio.html              menú central del tutor (abrir con doble clic)
 │   ├── tablas_frecuencia.html   herramienta: tablas de frecuencia
-│   ├── calendario.html          herramienta: calendario (entregas, parciales, reuniones)
-│   └── correos.html             herramienta: correos importantes
+│   ├── notas.html                herramienta: notas de corte
+│   └── recordatorios.html        herramienta: recordatorios manuales
 ├── latex/
 │   ├── plantilla_informe.tex    plantilla para informes de entrega
 │   ├── README.md                cómo compilarla
@@ -58,20 +58,26 @@ cargar la librería de gráficas). Permite:
 Por ahora cubre datos cualitativos y discretos. Los intervalos de clase para
 datos continuos quedan para una próxima versión.
 
-## Herramienta: calendario (`app/calendario.html`)
+## Herramienta: notas de corte (`app/notas.html`)
 
-Lista cronológica de entregas y parciales, tomados del calendario del campus
-virtual de la UAN, más un arreglo `REUNIONES` para sumar a mano otras fechas
-relevantes (una reunión propuesta, por ejemplo). Los datos están embebidos
-directamente en el HTML — no hay conexión en vivo a Google Calendar desde el
-navegador (sería inseguro exponer credenciales OAuth en un archivo local) —
-así que se actualizan editando el arreglo cuando se conversa sobre el tema.
+Registro de notas por curso: cada curso tiene actividades con nota (0-5) y
+porcentaje, y muestra el acumulado ponderado, el % usado y la nota que hace
+falta en lo que resta para alcanzar la meta (3.0 por defecto, editable por
+curso). Los datos se guardan en `localStorage` del navegador — son privados,
+no viajan al repositorio ni requieren pedirle a Claude que edite código para
+cada nota nueva.
 
-## Herramienta: correos importantes (`app/correos.html`)
+## Herramienta: recordatorios (`app/recordatorios.html`)
 
-Lista de correos marcados como importantes a mano durante el chat, sin
-filtro automático de Gmail. Arranca vacía; los correos se van agregando al
-arreglo `CORREOS` del HTML a medida que se piden.
+Lista de tareas, entregas y parciales que se agregan a mano desde la propia
+página (título, curso opcional, fecha y tipo), con checkbox para marcarlas
+como hechas. También se guarda en `localStorage`, igual que notas de corte.
+
+> Antes existían las herramientas "Calendario" y "Correos importantes",
+> pensadas para sincronizarse solas con Google Calendar/Gmail vía una rutina
+> en la nube. Se retiraron porque esa rutina no lograba obtener permiso de
+> escritura sobre el repositorio (bloqueo a nivel de cuenta de GitHub) y el
+> enfoque manual resultó más simple y confiable.
 
 ## Plantilla de informes (`latex/`)
 

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notas de corte — Tutor</title>
+<link rel="stylesheet" href="assets/theme.css">
+<script src="assets/icons.js"></script>
+<style>
+  header h1{display:flex;align-items:center;gap:8px;}
+  header h1 [data-icon]{color:var(--accent);}
+
+  .card{
+    background:var(--surface-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .card h2{font-size:14px;margin:0 0 14px;font-weight:700;}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:11.5px;font-weight:600;color:var(--ink-secondary);}
+  input[type=text], input[type=number]{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:13.5px;
+    font-family:inherit;
+    background:var(--surface-sunken);
+    color:var(--ink);
+    width:100%;
+  }
+  input:focus{outline:2px solid var(--accent-soft-bg);border-color:var(--accent);}
+  button{
+    display:inline-flex;align-items:center;gap:6px;
+    border:none;border-radius:9px;padding:9px 15px;
+    font-size:13px;font-weight:600;cursor:pointer;
+    font-family:inherit;
+    transition:opacity .15s ease, transform .05s ease;
+  }
+  button:active{transform:translateY(1px);}
+  button:hover{opacity:.88;}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-ghost{background:transparent;color:var(--ink-secondary);border:1px solid var(--border);}
+  .btn-icon{
+    background:transparent;color:var(--ink-muted);
+    padding:6px;border-radius:8px;
+  }
+  .btn-icon:hover{background:var(--warn-soft-bg);color:var(--warn-soft-ink);}
+
+  .curso{margin-bottom:16px;}
+  .curso-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;}
+  .curso-head h2{margin:0;font-size:16px;font-weight:800;}
+  .curso-head .meta-field{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-secondary);}
+  .curso-head .meta-field input{width:60px;padding:5px 7px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px;}
+  th,td{padding:8px 8px;text-align:left;border-bottom:1px solid var(--gridline);}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-muted);font-weight:700;}
+  td.num, th.num{text-align:right;font-variant-numeric:tabular-nums;}
+  td.acciones{text-align:right;width:36px;}
+
+  .resumen{
+    display:flex;gap:16px;flex-wrap:wrap;
+    background:var(--surface-sunken);
+    border-radius:12px;
+    padding:12px 16px;
+    margin-top:4px;
+  }
+  .resumen .stat{font-size:12px;color:var(--ink-secondary);}
+  .resumen .stat b{display:block;font-size:17px;color:var(--ink);margin-top:2px;}
+  .resumen .stat.warn b{color:var(--warn-soft-ink);}
+  .resumen .stat.good b{color:var(--good-text);}
+
+  .empty{color:var(--ink-muted);font-size:13px;text-align:center;padding:30px 10px;}
+  .hint{font-size:12px;color:var(--ink-muted);margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+
+  <header>
+    <div>
+      <a class="menu-link" href="inicio.html"><span data-icon="chevron-left" data-icon-size="14"></span>Menú</a>
+      <h1><span data-icon="percent" data-icon-size="22"></span>Notas de corte</h1>
+      <p>Tu asistente académico</p>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema"></button>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>Agregar curso</h2>
+    <div class="row">
+      <div class="field" style="flex:1 1 200px;">
+        <label for="nombreCurso">Nombre del curso</label>
+        <input type="text" id="nombreCurso" placeholder="Ej. Aplicaciones Móviles">
+      </div>
+      <button class="btn-primary" id="btnAgregarCurso"><span data-icon="plus" data-icon-size="14"></span>Agregar curso</button>
+    </div>
+  </div>
+
+  <div id="cursosBox"></div>
+
+  <p class="hint">Los datos se guardan en este navegador (localStorage), no en el repositorio — son privados y no requieren conexión ni pedirme que los edite.</p>
+
+  <footer>Tutor UAN · notas de corte</footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'tf_notas_cursos';
+
+function cargarCursos() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function guardarCursos(cursos) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cursos));
+}
+function nuevoId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+let cursos = cargarCursos();
+
+const cursosBox = document.getElementById('cursosBox');
+
+function celda(tag, texto, cls) {
+  const el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (texto !== undefined) el.textContent = texto;
+  return el;
+}
+
+function render() {
+  cursosBox.innerHTML = '';
+
+  if (cursos.length === 0) {
+    const p = celda('p', 'Todavía no agregaste ningún curso.', 'empty');
+    cursosBox.appendChild(p);
+    return;
+  }
+
+  cursos.forEach(curso => {
+    const card = document.createElement('div');
+    card.className = 'card curso';
+
+    const head = document.createElement('div');
+    head.className = 'curso-head';
+    const h2 = celda('h2', curso.nombre);
+    const metaField = document.createElement('div');
+    metaField.className = 'meta-field';
+    metaField.appendChild(document.createTextNode('Meta '));
+    const metaInput = document.createElement('input');
+    metaInput.type = 'number';
+    metaInput.min = '0'; metaInput.max = '5'; metaInput.step = '0.1';
+    metaInput.value = curso.meta;
+    metaInput.addEventListener('change', () => {
+      curso.meta = parseFloat(metaInput.value) || 3.0;
+      guardarCursos(cursos);
+      render();
+    });
+    metaField.appendChild(metaInput);
+    const btnDelCurso = document.createElement('button');
+    btnDelCurso.className = 'btn-icon';
+    btnDelCurso.innerHTML = iconSvg('trash', 15);
+    btnDelCurso.title = 'Eliminar curso';
+    btnDelCurso.addEventListener('click', () => {
+      if (!confirm('¿Eliminar "' + curso.nombre + '" y todas sus notas?')) return;
+      cursos = cursos.filter(c => c.id !== curso.id);
+      guardarCursos(cursos);
+      render();
+    });
+    const headRight = document.createElement('div');
+    headRight.style.display = 'flex';
+    headRight.style.alignItems = 'center';
+    headRight.style.gap = '10px';
+    headRight.append(metaField, btnDelCurso);
+    head.append(h2, headRight);
+    card.appendChild(head);
+
+    if (curso.items.length > 0) {
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const trh = document.createElement('tr');
+      trh.append(celda('th', 'Actividad'), celda('th', 'Nota', 'num'), celda('th', '%', 'num'), celda('th', ''));
+      thead.appendChild(trh);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      curso.items.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.append(
+          celda('td', item.nombre),
+          celda('td', item.nota.toFixed(1), 'num'),
+          celda('td', item.pct + '%', 'num')
+        );
+        const tdAcc = celda('td', undefined, 'acciones');
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn-icon';
+        btnDel.innerHTML = iconSvg('trash', 13);
+        btnDel.title = 'Eliminar';
+        btnDel.addEventListener('click', () => {
+          curso.items = curso.items.filter(i => i.id !== item.id);
+          guardarCursos(cursos);
+          render();
+        });
+        tdAcc.appendChild(btnDel);
+        tr.appendChild(tdAcc);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      card.appendChild(table);
+    }
+
+    // Formulario para agregar actividad
+    const form = document.createElement('div');
+    form.className = 'row';
+    form.style.marginBottom = '14px';
+
+    const fNombre = document.createElement('div');
+    fNombre.className = 'field';
+    fNombre.style.flex = '1 1 160px';
+    fNombre.innerHTML = '<label>Actividad</label>';
+    const iNombre = document.createElement('input');
+    iNombre.type = 'text';
+    iNombre.placeholder = 'Ej. Taller 2';
+    fNombre.appendChild(iNombre);
+
+    const fNota = document.createElement('div');
+    fNota.className = 'field';
+    fNota.style.flex = '0 0 80px';
+    fNota.innerHTML = '<label>Nota</label>';
+    const iNota = document.createElement('input');
+    iNota.type = 'number'; iNota.min = '0'; iNota.max = '5'; iNota.step = '0.1';
+    fNota.appendChild(iNota);
+
+    const fPct = document.createElement('div');
+    fPct.className = 'field';
+    fPct.style.flex = '0 0 80px';
+    fPct.innerHTML = '<label>%</label>';
+    const iPct = document.createElement('input');
+    iPct.type = 'number'; iPct.min = '0'; iPct.max = '100'; iPct.step = '1';
+    fPct.appendChild(iPct);
+
+    const btnAdd = document.createElement('button');
+    btnAdd.className = 'btn-ghost';
+    btnAdd.innerHTML = iconSvg('plus', 14) + 'Agregar';
+    btnAdd.addEventListener('click', () => {
+      const nombre = iNombre.value.trim();
+      const nota = parseFloat(iNota.value);
+      const pct = parseFloat(iPct.value);
+      if (!nombre || isNaN(nota) || isNaN(pct)) {
+        alert('Completá actividad, nota y porcentaje.');
+        return;
+      }
+      curso.items.push({ id: nuevoId(), nombre, nota, pct });
+      guardarCursos(cursos);
+      render();
+    });
+
+    form.append(fNombre, fNota, fPct, btnAdd);
+    card.appendChild(form);
+
+    // Resumen
+    const pctUsado = curso.items.reduce((s, i) => s + i.pct, 0);
+    const acumulado = curso.items.reduce((s, i) => s + i.nota * i.pct / 100, 0);
+    const pctRestante = 100 - pctUsado;
+
+    const resumen = document.createElement('div');
+    resumen.className = 'resumen';
+
+    function stat(label, valor, cls) {
+      const div = document.createElement('div');
+      div.className = 'stat' + (cls ? ' ' + cls : '');
+      div.appendChild(document.createTextNode(label));
+      const b = document.createElement('b');
+      b.textContent = valor;
+      div.appendChild(b);
+      return div;
+    }
+
+    resumen.appendChild(stat('% usado', pctUsado.toFixed(0) + '%', pctUsado > 100 ? 'warn' : ''));
+    resumen.appendChild(stat('Acumulado', acumulado.toFixed(2)));
+
+    if (pctUsado > 100) {
+      resumen.appendChild(stat('Atención', 'suma > 100%', 'warn'));
+    } else if (pctRestante <= 0) {
+      resumen.appendChild(stat('Nota final', acumulado.toFixed(2), acumulado >= curso.meta ? 'good' : 'warn'));
+    } else {
+      const necesaria = (curso.meta - acumulado) * 100 / pctRestante;
+      if (necesaria <= 0) {
+        resumen.appendChild(stat('Meta (' + curso.meta.toFixed(1) + ')', 'asegurada', 'good'));
+      } else if (necesaria > 5) {
+        resumen.appendChild(stat('Necesitás en el ' + pctRestante.toFixed(0) + '% restante', 'no alcanza (>5.0)', 'warn'));
+      } else {
+        resumen.appendChild(stat('Necesitás en el ' + pctRestante.toFixed(0) + '% restante', necesaria.toFixed(2)));
+      }
+    }
+
+    card.appendChild(resumen);
+    cursosBox.appendChild(card);
+  });
+}
+
+document.getElementById('btnAgregarCurso').addEventListener('click', () => {
+  const input = document.getElementById('nombreCurso');
+  const nombre = input.value.trim();
+  if (!nombre) { alert('Ingresá el nombre del curso.'); return; }
+  cursos.push({ id: nuevoId(), nombre, meta: 3.0, items: [] });
+  guardarCursos(cursos);
+  input.value = '';
+  render();
+});
+
+render();
+
+/* ---------- Tema claro / oscuro ---------- */
+const rootEl = document.documentElement;
+const btnTheme = document.getElementById('btnTheme');
+function tema() { return rootEl.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+function aplicarTema(t) {
+  rootEl.setAttribute('data-theme', t);
+  btnTheme.innerHTML = iconSvg(t === 'dark' ? 'sun' : 'moon', 16);
+  localStorage.setItem('tf_theme', t);
+}
+(function initTema() {
+  const guardado = localStorage.getItem('tf_theme');
+  const preferido = guardado || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  aplicarTema(preferido);
+})();
+btnTheme.addEventListener('click', () => {
+  aplicarTema(tema() === 'dark' ? 'light' : 'dark');
+});
+</script>
+</body>
+</html>

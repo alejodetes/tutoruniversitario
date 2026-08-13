@@ -3,6 +3,25 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/), versionado
 `MAYOR.MENOR.PARCHE`.
 
+## [1.8.0] - 2026-08-13
+### Quitado
+- Herramientas "Calendario" y "Correos importantes", junto con la rutina
+  automática en la nube que intentaba sincronizarlas con Google
+  Calendar/Gmail. La rutina nunca logró permiso de escritura sobre el
+  repositorio (bloqueo de cuenta de GitHub, no resoluble desde el código),
+  así que se reemplaza el enfoque por herramientas 100% manuales.
+
+### Agregado
+- "Notas de corte" (`app/notas.html`): registro de notas por curso y
+  actividad, con acumulado ponderado y cálculo de la nota necesaria en el
+  % restante para alcanzar la meta.
+- "Recordatorios" (`app/recordatorios.html`): lista manual de tareas,
+  entregas y parciales con checkbox de completado.
+- Ambas herramientas nuevas guardan sus datos en `localStorage` del
+  navegador — privados, instantáneos, sin pasar por git.
+- Íconos nuevos en `app/assets/icons.js`: percent, list-checks, trash,
+  circle-check, circle.
+
 ## [1.7.0] - 2026-08-10
 ### Cambiado
 - Tarjetas del menú de inicio rediseñadas con una "portada" grande a

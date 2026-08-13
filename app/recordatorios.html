@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recordatorios — Tutor</title>
+<link rel="stylesheet" href="assets/theme.css">
+<script src="assets/icons.js"></script>
+<style>
+  header h1{display:flex;align-items:center;gap:8px;}
+  header h1 [data-icon]{color:var(--accent);}
+
+  .card{
+    background:var(--surface-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .card h2{font-size:14px;margin:0 0 14px;font-weight:700;}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:11.5px;font-weight:600;color:var(--ink-secondary);}
+  input[type=text], input[type=date], select{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:13.5px;
+    font-family:inherit;
+    background:var(--surface-sunken);
+    color:var(--ink);
+    width:100%;
+  }
+  input:focus, select:focus{outline:2px solid var(--accent-soft-bg);border-color:var(--accent);}
+  button{
+    display:inline-flex;align-items:center;gap:6px;
+    border:none;border-radius:9px;padding:9px 15px;
+    font-size:13px;font-weight:600;cursor:pointer;
+    font-family:inherit;
+    transition:opacity .15s ease, transform .05s ease;
+  }
+  button:active{transform:translateY(1px);}
+  button:hover{opacity:.88;}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-icon{background:transparent;color:var(--ink-muted);padding:6px;border-radius:8px;}
+  .btn-icon:hover{background:var(--warn-soft-bg);color:var(--warn-soft-ink);}
+  .btn-icon.check:hover{background:var(--good-soft-bg);color:var(--good-text);}
+
+  .list{display:flex;flex-direction:column;gap:10px;}
+  .item{
+    background:var(--surface-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:12px 14px;
+    box-shadow:var(--shadow);
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .item.hecho{opacity:.55;}
+  .item.hecho .titulo{text-decoration:line-through;}
+  .item .date-badge{
+    flex-shrink:0;
+    width:46px;
+    text-align:center;
+    background:var(--surface-sunken);
+    border-radius:var(--radius-sm);
+    padding:6px 4px;
+  }
+  .item .date-badge .day{display:block;font-size:16px;font-weight:800;line-height:1;}
+  .item .date-badge .mon{display:block;font-size:9.5px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+  .item .body{flex:1;min-width:0;}
+  .item .titulo{font-size:14px;font-weight:700;margin:0 0 3px;}
+  .item .meta{font-size:11.5px;color:var(--ink-muted);}
+  .item .acciones{display:flex;gap:2px;flex-shrink:0;}
+
+  .tag{
+    display:inline-block;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    padding:2px 8px;
+    border-radius:999px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .tag.tarea{background:var(--warn-soft-bg);color:var(--warn-soft-ink);}
+  .tag.parcial{background:var(--accent-soft-bg);color:var(--accent-soft-ink);}
+  .tag.otro{background:var(--surface-sunken);color:var(--ink-secondary);}
+
+  .empty{color:var(--ink-muted);font-size:13px;text-align:center;padding:30px 10px;}
+  .hint{font-size:12px;color:var(--ink-muted);margin-top:10px;}
+  .section-label{font-size:12px;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.03em;margin:18px 0 8px;}
+</style>
+</head>
+<body>
+<div class="wrap narrow">
+
+  <header>
+    <div>
+      <a class="menu-link" href="inicio.html"><span data-icon="chevron-left" data-icon-size="14"></span>Menú</a>
+      <h1><span data-icon="list-checks" data-icon-size="22"></span>Recordatorios</h1>
+      <p>Tu asistente académico</p>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema"></button>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>Agregar recordatorio</h2>
+    <div class="row">
+      <div class="field" style="flex:1 1 180px;">
+        <label for="fTitulo">Título</label>
+        <input type="text" id="fTitulo" placeholder="Ej. Entregar Taller 3">
+      </div>
+      <div class="field" style="flex:1 1 140px;">
+        <label for="fCurso">Curso (opcional)</label>
+        <input type="text" id="fCurso" placeholder="Ej. Aplicaciones Móviles">
+      </div>
+      <div class="field" style="flex:0 0 150px;">
+        <label for="fFecha">Fecha</label>
+        <input type="date" id="fFecha">
+      </div>
+      <div class="field" style="flex:0 0 130px;">
+        <label for="fTipo">Tipo</label>
+        <select id="fTipo">
+          <option value="tarea">Tarea</option>
+          <option value="parcial">Parcial</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <button class="btn-primary" id="btnAgregar"><span data-icon="plus" data-icon-size="14"></span>Agregar</button>
+    </div>
+  </div>
+
+  <div id="listaBox"></div>
+
+  <p class="hint">Los recordatorios se guardan en este navegador (localStorage), no en el repositorio — son privados y se agregan/editan al instante, sin pedirme que edite código.</p>
+
+  <footer>Tutor UAN · recordatorios manuales</footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'tf_recordatorios';
+const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+
+function cargar() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function guardar(items) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+function nuevoId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+let items = cargar();
+const listaBox = document.getElementById('listaBox');
+
+function tagLabel(tipo) {
+  return tipo === 'tarea' ? 'Tarea' : tipo === 'parcial' ? 'Parcial' : 'Otro';
+}
+
+function renderGrupo(titulo, lista) {
+  const wrap = document.createDocumentFragment();
+  if (lista.length === 0) return wrap;
+
+  const label = document.createElement('div');
+  label.className = 'section-label';
+  label.textContent = titulo;
+  wrap.appendChild(label);
+
+  const list = document.createElement('div');
+  list.className = 'list';
+
+  lista.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'item enter' + (item.hecho ? ' hecho' : '');
+
+    const badge = document.createElement('div');
+    badge.className = 'date-badge';
+    if (item.fecha) {
+      const d = new Date(item.fecha + 'T00:00:00');
+      const day = document.createElement('span');
+      day.className = 'day';
+      day.textContent = String(d.getDate()).padStart(2, '0');
+      const mon = document.createElement('span');
+      mon.className = 'mon';
+      mon.textContent = MESES[d.getMonth()];
+      badge.append(day, mon);
+    } else {
+      badge.innerHTML = iconSvg('circle', 18);
+      badge.style.display = 'flex';
+      badge.style.alignItems = 'center';
+      badge.style.justifyContent = 'center';
+      badge.style.color = 'var(--ink-muted)';
+    }
+
+    const body = document.createElement('div');
+    body.className = 'body';
+    const tituloEl = document.createElement('div');
+    tituloEl.className = 'titulo';
+    tituloEl.textContent = item.titulo;
+    const tag = document.createElement('span');
+    tag.className = 'tag ' + item.tipo;
+    tag.textContent = tagLabel(item.tipo);
+    tituloEl.appendChild(tag);
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = item.curso || '';
+    body.append(tituloEl, meta);
+
+    const acciones = document.createElement('div');
+    acciones.className = 'acciones';
+    const btnCheck = document.createElement('button');
+    btnCheck.className = 'btn-icon check';
+    btnCheck.title = item.hecho ? 'Marcar como pendiente' : 'Marcar como hecho';
+    btnCheck.innerHTML = iconSvg(item.hecho ? 'circle' : 'circle-check', 16);
+    btnCheck.addEventListener('click', () => {
+      item.hecho = !item.hecho;
+      guardar(items);
+      render();
+    });
+    const btnDel = document.createElement('button');
+    btnDel.className = 'btn-icon';
+    btnDel.title = 'Eliminar';
+    btnDel.innerHTML = iconSvg('trash', 15);
+    btnDel.addEventListener('click', () => {
+      items = items.filter(i => i.id !== item.id);
+      guardar(items);
+      render();
+    });
+    acciones.append(btnCheck, btnDel);
+
+    div.append(badge, body, acciones);
+    list.appendChild(div);
+  });
+
+  wrap.appendChild(list);
+  return wrap;
+}
+
+function render() {
+  listaBox.innerHTML = '';
+
+  if (items.length === 0) {
+    listaBox.innerHTML = '<p class="empty">Todavía no agregaste ningún recordatorio.</p>';
+    return;
+  }
+
+  const ordenados = [...items].sort((a, b) => (a.fecha || '9999').localeCompare(b.fecha || '9999'));
+  const pendientes = ordenados.filter(i => !i.hecho);
+  const hechos = ordenados.filter(i => i.hecho);
+
+  listaBox.appendChild(renderGrupo('Pendientes', pendientes));
+  listaBox.appendChild(renderGrupo('Completados', hechos));
+}
+
+document.getElementById('btnAgregar').addEventListener('click', () => {
+  const titulo = document.getElementById('fTitulo').value.trim();
+  const curso = document.getElementById('fCurso').value.trim();
+  const fecha = document.getElementById('fFecha').value;
+  const tipo = document.getElementById('fTipo').value;
+  if (!titulo) { alert('Ingresá un título.'); return; }
+
+  items.push({ id: nuevoId(), titulo, curso, fecha, tipo, hecho: false });
+  guardar(items);
+
+  document.getElementById('fTitulo').value = '';
+  document.getElementById('fCurso').value = '';
+  document.getElementById('fFecha').value = '';
+  render();
+});
+
+render();
+
+/* ---------- Tema claro / oscuro ---------- */
+const rootEl = document.documentElement;
+const btnTheme = document.getElementById('btnTheme');
+function tema() { return rootEl.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+function aplicarTema(t) {
+  rootEl.setAttribute('data-theme', t);
+  btnTheme.innerHTML = iconSvg(t === 'dark' ? 'sun' : 'moon', 16);
+  localStorage.setItem('tf_theme', t);
+}
+(function initTema() {
+  const guardado = localStorage.getItem('tf_theme');
+  const preferido = guardado || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  aplicarTema(preferido);
+})();
+btnTheme.addEventListener('click', () => {
+  aplicarTema(tema() === 'dark' ? 'light' : 'dark');
+});
+</script>
+</body>
+</html>
