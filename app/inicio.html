@@ -4,12 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutor — Probabilidad y Estadística</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
+<script src="assets/icons.js"></script>
 <style>
+  .heading-font{font-family:'Space Grotesk', system-ui, sans-serif;}
+
+  header h1{
+    font-family:'Space Grotesk', system-ui, sans-serif;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  header h1 [data-icon]{color:var(--accent);}
+  header p{font-weight:600;letter-spacing:.01em;opacity:.92;}
+
+  .header-right{
+    background:var(--surface-sunken);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:5px;
+  }
+  .header-right .theme-toggle{border:none;}
+
+  .section-label{
+    font-family:'Space Grotesk', system-ui, sans-serif;
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 16px;
+    color:var(--ink);
+  }
+
   .grid{
     display:grid;
     grid-template-columns: 1fr;
-    gap:16px;
+    gap:18px;
   }
   @media (min-width:560px){ .grid{grid-template-columns: repeat(2, 1fr);} }
   @media (min-width:900px){ .grid{grid-template-columns: repeat(3, 1fr);} }
@@ -20,7 +51,7 @@
     background:var(--surface-card);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    box-shadow: var(--shadow);
+    box-shadow: 0 1px 2px rgba(11,8,28,.12), 0 24px 48px -28px rgba(11,8,28,.55);
     text-decoration:none;
     color:inherit;
     display:flex;
@@ -28,27 +59,39 @@
     overflow:hidden;
     transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s ease, border-color .22s ease;
   }
-  .tool-card:hover{transform:translateY(-4px) scale(1.01);border-color:var(--accent);}
+  .tool-card::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:3px;
+    background:var(--accent);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition: transform .25s ease;
+    z-index:3;
+  }
+  .tool-card:hover{transform:translateY(-5px) scale(1.012);border-color:var(--accent);box-shadow:0 1px 2px rgba(11,8,28,.12), 0 30px 54px -26px rgba(11,8,28,.6);}
+  .tool-card:hover::before{transform:scaleX(1);}
   .tool-card:hover .cover .icon{transform:scale(1.08) rotate(-4deg);}
   .tool-card:active{transform:translateY(-1px) scale(.995);}
 
   .cover{
     position:relative;
-    height:108px;
+    height:112px;
     display:flex;align-items:center;justify-content:center;
     overflow:hidden;
     flex-shrink:0;
   }
-  .cover.c1{background:linear-gradient(135deg,#3f7fe0,#294f9c);}
-  .cover.c2{background:linear-gradient(135deg,#ea7c40,#a94e1d);}
-  .cover.c3{background:linear-gradient(135deg,#22b686,#12744f);}
-  .cover.c4{background:linear-gradient(135deg,#eea968,#b56a29);}
+  .cover.c1{background:radial-gradient(120% 150% at 15% -10%, rgba(255,255,255,.28), transparent 60%), linear-gradient(135deg,#3f7fe0,#233f7c);}
+  .cover.c2{background:radial-gradient(120% 150% at 15% -10%, rgba(255,255,255,.28), transparent 60%), linear-gradient(135deg,#e2823f,#8a4a15);}
+  .cover.c3{background:radial-gradient(120% 150% at 15% -10%, rgba(255,255,255,.28), transparent 60%), linear-gradient(135deg,#22a877,#12603f);}
+  .cover.c4{background:radial-gradient(120% 150% at 15% -10%, rgba(255,255,255,.28), transparent 60%), linear-gradient(135deg,#8f7fe0,#4a3a9c);}
   .cover::before{
     content:'';
     position:absolute;
     width:130px;height:130px;
     border-radius:50%;
-    background:rgba(255,255,255,.15);
+    background:rgba(255,255,255,.14);
     filter:blur(2px);
     right:-38px;top:-46px;
   }
@@ -57,36 +100,54 @@
     position:absolute;
     width:70px;height:70px;
     border-radius:50%;
-    background:rgba(0,0,0,.10);
+    background:rgba(0,0,0,.12);
     left:-20px;bottom:-30px;
   }
   .cover .icon{
-    font-size:38px;
-    filter:drop-shadow(0 4px 10px rgba(0,0,0,.3));
+    color:#fff;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
     transition: transform .25s cubic-bezier(.16,1,.3,1);
     position:relative;
     z-index:1;
   }
 
-  .body{padding:34px 20px 20px;display:flex;flex-direction:column;gap:7px;flex:1;}
-  .tool-card h2{font-size:16px;margin:0;font-weight:800;letter-spacing:-.005em;}
-  .tool-card p{margin:0;font-size:13.5px;color:var(--ink-secondary);line-height:1.5;flex-grow:1;}
+  .body{padding:20px 20px 18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .tool-card h2{font-family:'Space Grotesk', system-ui, sans-serif;font-size:18px;margin:0;font-weight:700;letter-spacing:-.005em;}
+  .tool-card p{margin:0;font-size:13px;color:var(--ink-secondary);line-height:1.55;flex-grow:1;min-height:60px;}
   .status{
     position:absolute;
-    right:16px;
-    top:108px;
-    transform:translateY(-50%);
-    font-size:11px;
+    right:12px;
+    top:12px;
+    font-size:10.5px;
     font-weight:700;
     letter-spacing:.03em;
     text-transform:uppercase;
     padding:5px 11px;
     border-radius:999px;
-    box-shadow:0 6px 14px -4px rgba(0,0,0,.4);
     z-index:2;
   }
-  .status.disponible{background:var(--accent);color:var(--accent-ink);}
-  .status.proximamente{background:var(--surface-raised);color:var(--ink-muted);}
+  .status.disponible{
+    background:rgba(13,46,30,.55);
+    color:#eafff5;
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    box-shadow:0 4px 10px -4px rgba(0,0,0,.35);
+  }
+  .status.proximamente{background:var(--surface-raised);color:var(--ink-muted);border:1px solid var(--border);}
+
+  .card-footer{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:4px;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-muted);
+  }
+  .card-footer [data-icon]{color:var(--good-text);}
+  .card-footer b{color:var(--ink-secondary);font-weight:700;}
 
   .tool-card.placeholder{
     border-style:dashed;
@@ -94,53 +155,112 @@
     color:var(--ink-muted);
     cursor:default;
   }
-  .tool-card.placeholder:hover{transform:none;border-color:var(--border);}
+  .tool-card.placeholder:hover{transform:none;border-color:var(--border);box-shadow:none;}
+  .tool-card.placeholder:hover::before{transform:scaleX(0);}
   .tool-card.placeholder .cover{background:var(--surface-sunken);}
   .tool-card.placeholder .cover::before, .tool-card.placeholder .cover::after{display:none;}
-  .tool-card.placeholder .cover .icon{font-size:26px;filter:none;opacity:.7;}
-  .tool-card.placeholder .body{padding-top:20px;text-align:center;}
+  .tool-card.placeholder .cover .icon{color:var(--ink-muted);opacity:.55;filter:none;}
+  .tool-card.placeholder .body{padding-top:20px;text-align:center;align-items:center;}
 
-  .hero{margin-bottom:26px;}
-  .hero p{margin:6px 0 0;color:var(--ink-secondary);font-size:13.5px;max-width:46ch;}
+  header{margin-bottom:32px;}
 
-  .revisiones{
-    display:flex;
-    justify-content:flex-end;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:18px;
+  /* ---------- Navegación: barra inferior en móvil, lateral en PC ---------- */
+  .bottom-nav, .side-nav{
+    position:fixed;
+    z-index:50;
+    background:var(--surface-card);
+    border-color:var(--border);
   }
-  .revisiones a{text-decoration:none;}
+  .bottom-nav a, .side-nav a{
+    display:flex;
+    text-decoration:none;
+    color:var(--ink-muted);
+    font-weight:700;
+    transition: color .15s ease, background .15s ease;
+  }
+  .bottom-nav a .ic, .side-nav a .ic{line-height:1;}
+  .bottom-nav a.active, .side-nav a.active{color:var(--accent);background:var(--accent-soft-bg);}
+  .bottom-nav a:hover, .side-nav a:hover{color:var(--ink);}
+
+  .bottom-nav{
+    left:0;right:0;bottom:0;
+    display:flex;
+    gap:2px;
+    border-top:1px solid var(--border);
+    box-shadow:0 -6px 20px -10px rgba(11,8,28,.4);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  .bottom-nav a{
+    flex:1;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:6px 2px;
+    border-radius:12px;
+    font-size:10.5px;
+  }
+
+  .side-nav{
+    left:0;top:0;bottom:0;
+    width:88px;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding:22px 8px;
+    border-right:1px solid var(--border);
+    display:none;
+  }
+  .side-nav a{
+    width:100%;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:10px 4px;
+    border-radius:14px;
+    font-size:10px;
+    text-align:center;
+  }
+  .side-nav a:hover{background:var(--surface-sunken);}
+
+  @media (min-width:860px){
+    .bottom-nav{display:none;}
+    .side-nav{display:flex;}
+    body{padding-left:106px;}
+  }
+  @media (max-width:859px){
+    body{padding-bottom:88px;}
+  }
 </style>
 </head>
 <body>
+
+<nav class="side-nav" id="sideNav" aria-label="Navegación principal"></nav>
+<nav class="bottom-nav" id="bottomNav" aria-label="Navegación principal"></nav>
+
 <div class="wrap">
 
   <header>
     <div>
-      <h1>🎓 Tutor</h1>
+      <h1><span data-icon="graduation-cap" data-icon-size="26"></span>Tutor</h1>
       <p>Tu asistente académico</p>
     </div>
     <div class="header-right">
-      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema"></button>
     </div>
   </header>
 
+  <h2 class="section-label">Elegí una herramienta para empezar</h2>
   <div class="grid" id="grid"></div>
 
-  <div class="revisiones">
-    <a href="calendario.html"><span class="check-badge">📅 Calendario · Revisado <b>10 ago 2026</b></span></a>
-    <a href="correos.html"><span class="check-badge">📧 Correos · Revisado <b>10 ago 2026</b></span></a>
-  </div>
-
-  <footer>Elegí una herramienta para empezar.</footer>
+  <footer>Tutor UAN · hecho para uso personal</footer>
 </div>
 
 <script>
-/* Cada herramienta nueva se agrega acá: icono, nombre, descripción, link, estado y color de avatar (c1-c4). */
+/* Cada herramienta nueva se agrega acá: icono (nombre de assets/icons.js), nombre,
+   descripción, link, estado, color de portada (c1-c4) y fecha de última revisión (opcional). */
 const HERRAMIENTAS = [
   {
-    icono: '📊',
+    icono: 'bar-chart-3',
     nombre: 'Tablas de Frecuencia',
     descripcion: 'Cargá tus datos y calculá fi, hi, hi%, Fi, Hi%, con gráficas de barras, histograma o pastel.',
     href: 'tablas_frecuencia.html',
@@ -148,20 +268,22 @@ const HERRAMIENTAS = [
     color: 'c1'
   },
   {
-    icono: '📅',
+    icono: 'calendar',
     nombre: 'Calendario',
     descripcion: 'Entregas y parciales del calendario UAN, más reuniones relevantes que se agreguen a mano.',
     href: 'calendario.html',
     estado: 'disponible',
-    color: 'c2'
+    color: 'c2',
+    revisado: '10 ago 2026'
   },
   {
-    icono: '📧',
+    icono: 'mail',
     nombre: 'Correos importantes',
     descripcion: 'Los correos que vayas marcando como importantes en el chat, todos en un solo lugar.',
     href: 'correos.html',
     estado: 'disponible',
-    color: 'c3'
+    color: 'c3',
+    revisado: '10 ago 2026'
   }
 ];
 
@@ -177,7 +299,7 @@ HERRAMIENTAS.forEach((h, i) => {
   cover.className = 'cover ' + h.color;
   const icon = document.createElement('span');
   icon.className = 'icon';
-  icon.textContent = h.icono;
+  icon.innerHTML = iconSvg(h.icono, 34);
   cover.appendChild(icon);
 
   const status = document.createElement('span');
@@ -192,6 +314,21 @@ HERRAMIENTAS.forEach((h, i) => {
   desc.textContent = h.descripcion;
   body.append(title, desc);
 
+  if (h.revisado) {
+    const footer = document.createElement('div');
+    footer.className = 'card-footer';
+    const ic = document.createElement('span');
+    ic.setAttribute('data-icon', 'check');
+    ic.setAttribute('data-icon-size', '13');
+    const txt = document.createElement('span');
+    txt.textContent = 'Revisado ';
+    const b = document.createElement('b');
+    b.textContent = h.revisado;
+    txt.appendChild(b);
+    footer.append(ic, txt);
+    body.appendChild(footer);
+  }
+
   a.append(cover, status, body);
   grid.appendChild(a);
 });
@@ -203,25 +340,56 @@ const pCover = document.createElement('div');
 pCover.className = 'cover';
 const pIcon = document.createElement('span');
 pIcon.className = 'icon';
-pIcon.textContent = '➕';
+pIcon.innerHTML = iconSvg('plus', 26);
 pCover.appendChild(pIcon);
+const pStatus = document.createElement('span');
+pStatus.className = 'status proximamente';
+pStatus.textContent = 'Próximamente';
 const pBody = document.createElement('div');
 pBody.className = 'body';
 const pText = document.createElement('p');
 pText.textContent = 'Acá van a aparecer nuevas herramientas a medida que se agreguen.';
 pBody.appendChild(pText);
-placeholder.append(pCover, pBody);
+placeholder.append(pCover, pStatus, pBody);
 grid.appendChild(placeholder);
+
+/* ---------- Navegación: barra inferior en móvil, lateral en PC ---------- */
+const NAV_ITEMS = [
+  { icono: 'home', etiqueta: 'Inicio', href: 'inicio.html', activo: true },
+  ...HERRAMIENTAS.filter(h => h.estado === 'disponible')
+    .map(h => ({ icono: h.icono, etiqueta: h.nombre.split(' ')[0], href: h.href, activo: false }))
+];
+
+function renderNav(container) {
+  NAV_ITEMS.forEach(item => {
+    const a = document.createElement('a');
+    a.href = item.href;
+    if (item.activo) a.classList.add('active');
+
+    const ic = document.createElement('span');
+    ic.className = 'ic';
+    ic.innerHTML = iconSvg(item.icono, 19);
+
+    const label = document.createElement('span');
+    label.textContent = item.etiqueta;
+
+    a.append(ic, label);
+    container.appendChild(a);
+  });
+}
+renderNav(document.getElementById('sideNav'));
+renderNav(document.getElementById('bottomNav'));
 
 /* ---------- Tema claro / oscuro ---------- */
 const rootEl = document.documentElement;
+const btnTheme = document.getElementById('btnTheme');
 
 function tema() {
   return rootEl.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 function aplicarTema(t) {
   rootEl.setAttribute('data-theme', t);
-  document.getElementById('btnTheme').textContent = t === 'dark' ? '☀️' : '🌙';
+  btnTheme.innerHTML = iconSvg(t === 'dark' ? 'sun' : 'moon', 16);
   localStorage.setItem('tf_theme', t);
 }
 (function initTema() {
@@ -229,7 +397,7 @@ function aplicarTema(t) {
   const preferido = guardado || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   aplicarTema(preferido);
 })();
-document.getElementById('btnTheme').addEventListener('click', () => {
+btnTheme.addEventListener('click', () => {
   aplicarTema(tema() === 'dark' ? 'light' : 'dark');
 });
 </script>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Correos importantes — Tutor</title>
 <link rel="stylesheet" href="assets/theme.css">
+<script src="assets/icons.js"></script>
 <style>
   .list{display:flex;flex-direction:column;gap:12px;}
   .mail{
@@ -26,6 +27,9 @@
   .mail p{margin:0;font-size:13px;color:var(--ink-secondary);line-height:1.5;}
 
   .empty{color:var(--ink-muted);font-size:13px;text-align:center;padding:34px 10px;line-height:1.6;white-space:pre-line;}
+
+  header h1{display:flex;align-items:center;gap:8px;}
+  header h1 [data-icon]{color:var(--accent);}
 </style>
 </head>
 <body>
@@ -33,13 +37,13 @@
 
   <header>
     <div>
-      <a class="menu-link" href="inicio.html">← Menú</a>
-      <h1>📧 Correos importantes</h1>
+      <a class="menu-link" href="inicio.html"><span data-icon="chevron-left" data-icon-size="14"></span>Menú</a>
+      <h1><span data-icon="mail" data-icon-size="22"></span>Correos importantes</h1>
       <p>Tu asistente académico</p>
     </div>
     <div class="header-right">
-      <span class="check-badge">✓ Revisado <b>10 ago 2026</b></span>
-      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
+      <span class="check-badge"><span data-icon="check" data-icon-size="13"></span>Revisado <b>10 ago 2026</b></span>
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema"></button>
     </div>
   </header>
 
@@ -102,7 +106,7 @@ const rootEl = document.documentElement;
 function tema() { return rootEl.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
 function aplicarTema(t) {
   rootEl.setAttribute('data-theme', t);
-  document.getElementById('btnTheme').textContent = t === 'dark' ? '☀️' : '🌙';
+  document.getElementById('btnTheme').innerHTML = iconSvg(t === 'dark' ? 'sun' : 'moon', 16);
   localStorage.setItem('tf_theme', t);
 }
 (function initTema() {

@@ -17,6 +17,8 @@
   --accent-soft-bg:rgba(242,166,90,0.16);
   --accent-soft-ink:#f6c98a;
   --good-text:#7fd9a8;
+  --good-soft-bg:rgba(127,217,168,0.16);
+  --good-soft-ink:#8fe0b6;
   --warn-soft-bg:rgba(232,104,52,0.18);
   --warn-soft-ink:#f0966a;
   --radius:20px;
@@ -35,20 +37,22 @@
 }
 :root[data-theme="light"]{
   color-scheme: light;
-  --surface-page:#faf6ef;
-  --surface-card:#ffffff;
-  --surface-sunken:#f2ecdd;
-  --surface-raised:#f7f1e4;
+  --surface-page:#f3ecdd;
+  --surface-card:#fffdf9;
+  --surface-sunken:#ece1cb;
+  --surface-raised:#f8f1e2;
   --ink:#241f3d;
   --ink-secondary:#5c5580;
   --ink-muted:#938ba8;
-  --gridline:#e7e0cf;
-  --border:rgba(36,31,61,0.10);
+  --gridline:#e2d8c0;
+  --border:rgba(36,31,61,0.11);
   --accent:#e8935a;
   --accent-ink:#ffffff;
   --accent-soft-bg:rgba(232,147,90,0.14);
   --accent-soft-ink:#b85f28;
   --good-text:#1a8a52;
+  --good-soft-bg:rgba(26,138,82,0.12);
+  --good-soft-ink:#146b40;
   --warn-soft-bg:rgba(235,104,52,0.12);
   --warn-soft-ink:#b4501e;
   --shadow:0 1px 2px rgba(36,31,61,0.05), 0 10px 26px -16px rgba(36,31,61,0.22);
@@ -57,20 +61,22 @@
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
     color-scheme: light;
-    --surface-page:#faf6ef;
-    --surface-card:#ffffff;
-    --surface-sunken:#f2ecdd;
-    --surface-raised:#f7f1e4;
+    --surface-page:#f3ecdd;
+    --surface-card:#fffdf9;
+    --surface-sunken:#ece1cb;
+    --surface-raised:#f8f1e2;
     --ink:#241f3d;
     --ink-secondary:#5c5580;
     --ink-muted:#938ba8;
-    --gridline:#e7e0cf;
-    --border:rgba(36,31,61,0.10);
+    --gridline:#e2d8c0;
+    --border:rgba(36,31,61,0.11);
     --accent:#e8935a;
     --accent-ink:#ffffff;
     --accent-soft-bg:rgba(232,147,90,0.14);
     --accent-soft-ink:#b85f28;
     --good-text:#1a8a52;
+    --good-soft-bg:rgba(26,138,82,0.12);
+    --good-soft-ink:#146b40;
     --warn-soft-bg:rgba(235,104,52,0.12);
     --warn-soft-ink:#b4501e;
     --shadow:0 1px 2px rgba(36,31,61,0.05), 0 10px 26px -16px rgba(36,31,61,0.22);
@@ -104,6 +110,13 @@ header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
   header h1{font-size:25px;}
 }
 
+[data-icon]{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
 .menu-link{
   display:inline-flex;
   align-items:center;
@@ -120,17 +133,18 @@ header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
 .check-badge{
   display:inline-flex;
   align-items:center;
-  gap:5px;
+  gap:6px;
   font-size:11.5px;
   font-weight:600;
-  color:var(--ink-muted);
+  color:var(--ink-secondary);
   background:var(--surface-sunken);
   border:1px solid var(--border);
   padding:6px 12px;
   border-radius:999px;
   white-space:nowrap;
 }
-.check-badge b{color:var(--ink-secondary);font-weight:700;}
+.check-badge [data-icon]{color:var(--good-text);}
+.check-badge b{color:var(--ink);font-weight:700;}
 
 .theme-toggle{
   width:38px;height:38px;

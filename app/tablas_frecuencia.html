@@ -6,6 +6,7 @@
 <title>Tablas de Frecuencia — Probabilidad y Estadística</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
 <link rel="stylesheet" href="assets/theme.css">
+<script src="assets/icons.js"></script>
 <style>
   /* --baseline se usa solo acá (línea base de eje en las gráficas), el resto de
      tokens vive en assets/theme.css para que el look sea uno solo en todo el tutor. */
@@ -34,9 +35,10 @@
     flex-wrap:wrap;
     gap:14px;
   }
-  header h1{font-size:23px;margin:0;font-weight:700;letter-spacing:-.01em;}
+  header h1{font-size:23px;margin:0;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+  header h1 [data-icon]{color:var(--accent);}
   header p{margin:3px 0 0;color:var(--ink-secondary);font-size:13px;}
-  .menu-link{display:inline-block;font-size:12.5px;font-weight:600;color:var(--ink-secondary);text-decoration:none;margin-bottom:6px;}
+  .menu-link{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;color:var(--ink-secondary);text-decoration:none;margin-bottom:6px;}
   .menu-link:hover{color:var(--accent);}
   .header-right{display:flex;align-items:center;gap:10px;}
   .badge{
@@ -127,6 +129,9 @@
     color:var(--ink);
   }
   button{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
     border:none;
     border-radius:9px;
     padding:9px 16px;
@@ -142,7 +147,9 @@
   .btn-secondary{background:var(--accent-soft-bg);color:var(--accent-soft-ink);}
   .btn-ghost{background:transparent;color:var(--ink-secondary);border:1px solid var(--border);}
   .file-btn{
-    display:inline-block;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
     background:var(--accent-soft-bg);
     color:var(--accent-soft-ink);
     padding:9px 16px;
@@ -265,13 +272,13 @@
 
   <header>
     <div>
-      <a class="menu-link" href="inicio.html">← Menú</a>
-      <h1>📊 Tablas de Frecuencia</h1>
+      <a class="menu-link" href="inicio.html"><span data-icon="chevron-left" data-icon-size="14"></span>Menú</a>
+      <h1><span data-icon="bar-chart-3" data-icon-size="22"></span>Tablas de Frecuencia</h1>
       <p>Tu asistente académico</p>
     </div>
     <div class="header-right">
       <span class="badge">v1.5.0</span>
-      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">🌙</button>
+      <button class="theme-toggle" id="btnTheme" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema"></button>
     </div>
   </header>
 
@@ -285,7 +292,7 @@
 
       <div class="row">
         <button class="btn-primary" id="btnCalcular">Generar tabla</button>
-        <label class="file-btn" for="fileInput">📂 Cargar CSV / TXT</label>
+        <label class="file-btn" for="fileInput"><span data-icon="folder-open" data-icon-size="14"></span>Cargar CSV / TXT</label>
         <input type="file" id="fileInput" accept=".csv,.txt">
         <button class="btn-ghost" id="btnLimpiar">Limpiar</button>
       </div>
@@ -322,7 +329,7 @@
         <div class="empty">Todavía no hay datos cargados.</div>
       </div>
       <div class="row" id="exportRow" style="display:none;">
-        <button class="btn-secondary" id="btnExportCSV">⬇️ Descargar tabla (CSV)</button>
+        <button class="btn-secondary" id="btnExportCSV"><span data-icon="download" data-icon-size="14"></span>Descargar tabla (CSV)</button>
       </div>
     </div>
 
@@ -354,7 +361,7 @@
         <div id="chartLegend"></div>
       </div>
       <div class="row" id="chartExportRow" style="display:none;">
-        <button class="btn-secondary" id="btnExportPNG">⬇️ Descargar gráfica (PNG)</button>
+        <button class="btn-secondary" id="btnExportPNG"><span data-icon="download" data-icon-size="14"></span>Descargar gráfica (PNG)</button>
       </div>
     </div>
 
@@ -402,7 +409,7 @@ function tema() {
 
 function aplicarTema(t) {
   rootEl.setAttribute('data-theme', t);
-  document.getElementById('btnTheme').textContent = t === 'dark' ? '☀️' : '🌙';
+  document.getElementById('btnTheme').innerHTML = iconSvg(t === 'dark' ? 'sun' : 'moon', 16);
   localStorage.setItem('tf_theme', t);
   if (datosOrdenados.length) dibujarGrafica();
 }
