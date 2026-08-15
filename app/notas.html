@@ -51,11 +51,29 @@
   }
   .btn-icon:hover{background:var(--warn-soft-bg);color:var(--warn-soft-ink);}
 
-  .curso{margin-bottom:16px;}
-  .curso-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;}
-  .curso-head h2{margin:0;font-size:16px;font-weight:800;}
-  .curso-head .meta-field{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-secondary);}
-  .curso-head .meta-field input{width:60px;padding:5px 7px;}
+  .materia{margin-bottom:16px;}
+  .materia-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;flex-wrap:wrap;}
+  .materia-head h2{margin:0;font-size:16px;font-weight:800;}
+  .materia-head .meta-field{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-secondary);}
+  .materia-head .meta-field input{width:60px;padding:5px 7px;}
+  .materia-head-right{display:flex;align-items:center;gap:10px;}
+
+  .corte{
+    background:var(--surface-sunken);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:12px;
+  }
+  .corte-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;}
+  .corte-head h3{margin:0;font-size:13.5px;font-weight:700;color:var(--ink);}
+  .corte-head-right{display:flex;align-items:center;gap:8px;}
+  .peso-field{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-secondary);font-weight:600;}
+  .peso-field input{width:55px;padding:5px 6px;font-size:12.5px;}
+  .corte table{background:var(--surface-card);border-radius:8px;overflow:hidden;}
+  .corte-resumen{display:flex;gap:16px;font-size:11.5px;color:var(--ink-secondary);margin-top:6px;flex-wrap:wrap;}
+  .corte-resumen b{color:var(--ink);}
+  .add-corte-row{margin:2px 0 16px;padding-top:2px;}
 
   table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px;}
   th,td{padding:8px 8px;text-align:left;border-bottom:1px solid var(--gridline);}
@@ -94,19 +112,19 @@
   </header>
 
   <div class="card">
-    <h2>Agregar curso</h2>
+    <h2>Agregar materia</h2>
     <div class="row">
       <div class="field" style="flex:1 1 200px;">
-        <label for="nombreCurso">Nombre del curso</label>
-        <input type="text" id="nombreCurso" placeholder="Ej. Aplicaciones Móviles">
+        <label for="nombreMateria">Nombre de la materia</label>
+        <input type="text" id="nombreMateria" placeholder="Ej. Aplicaciones Móviles">
       </div>
-      <button class="btn-primary" id="btnAgregarCurso"><span data-icon="plus" data-icon-size="14"></span>Agregar curso</button>
+      <button class="btn-primary" id="btnAgregarMateria"><span data-icon="plus" data-icon-size="14"></span>Agregar materia</button>
     </div>
   </div>
 
-  <div id="cursosBox"></div>
+  <div id="materiasBox"></div>
 
-  <p class="hint">Los datos se guardan en este navegador (localStorage), no en el repositorio — son privados y no requieren conexión ni pedirme que los edite.</p>
+  <p class="hint">Las materias se guardan en tu cuenta y se sincronizan en vivo entre tus dispositivos — son privadas, solo vos las ves. Cada materia puede tener varios cortes, y cada corte sus propias actividades.</p>
 
   <footer>Tutor UAN · notas de corte</footer>
 </div>
@@ -119,11 +137,11 @@ function nuevoId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-let cursos = [];
-let cursosSync = null;
-function guardarCursos(c) { if (cursosSync) cursosSync.guardar(c); }
+let materias = [];
+let materiasSync = null;
+function guardarMaterias(m) { if (materiasSync) materiasSync.guardar(m); }
 
-const cursosBox = document.getElementById('cursosBox');
+const materiasBox = document.getElementById('materiasBox');
 
 function celda(tag, texto, cls) {
   const el = document.createElement(tag);
@@ -132,183 +150,303 @@ function celda(tag, texto, cls) {
   return el;
 }
 
-function render() {
-  cursosBox.innerHTML = '';
+function stat(label, valor, cls) {
+  const div = document.createElement('div');
+  div.className = 'stat' + (cls ? ' ' + cls : '');
+  div.appendChild(document.createTextNode(label));
+  const b = document.createElement('b');
+  b.textContent = valor;
+  div.appendChild(b);
+  return div;
+}
 
-  if (cursos.length === 0) {
-    const p = celda('p', 'Todavía no agregaste ningún curso.', 'empty');
-    cursosBox.appendChild(p);
+// Promedio ponderado genérico: sirve tanto para actividades dentro de un corte
+// (obtenerNota = item => item.nota) como para cortes dentro de una materia
+// (obtenerNota = corte => su propio promedio ponderado de actividades).
+function resumenPonderado(entradas, obtenerNota) {
+  const pctUsado = entradas.reduce((s, e) => s + e.pct, 0);
+  const acumulado = entradas.reduce((s, e) => s + obtenerNota(e) * e.pct / 100, 0);
+  return { pctUsado, acumulado };
+}
+
+// Datos guardados antes de que existieran los cortes: se envuelven en un único
+// "Corte único" (100%) para no perder lo que ya había cargado el usuario.
+function migrar(lista) {
+  let cambio = false;
+  const out = lista.map(m => {
+    if (m.cortes) return m;
+    cambio = true;
+    return { id: m.id, nombre: m.nombre, meta: m.meta, cortes: [{ id: nuevoId(), nombre: 'Corte único', pct: 100, items: m.items || [] }] };
+  });
+  if (cambio) guardarMaterias(out);
+  return out;
+}
+
+function render() {
+  materiasBox.innerHTML = '';
+
+  if (materias.length === 0) {
+    const p = celda('p', 'Todavía no agregaste ninguna materia.', 'empty');
+    materiasBox.appendChild(p);
     return;
   }
 
-  cursos.forEach(curso => {
-    const card = document.createElement('div');
-    card.className = 'card curso';
-
-    const head = document.createElement('div');
-    head.className = 'curso-head';
-    const h2 = celda('h2', curso.nombre);
-    const metaField = document.createElement('div');
-    metaField.className = 'meta-field';
-    metaField.appendChild(document.createTextNode('Meta '));
-    const metaInput = document.createElement('input');
-    metaInput.type = 'number';
-    metaInput.min = '0'; metaInput.max = '5'; metaInput.step = '0.1';
-    metaInput.value = curso.meta;
-    metaInput.addEventListener('change', () => {
-      curso.meta = parseFloat(metaInput.value) || 3.0;
-      guardarCursos(cursos);
-      render();
-    });
-    metaField.appendChild(metaInput);
-    const btnDelCurso = document.createElement('button');
-    btnDelCurso.className = 'btn-icon';
-    btnDelCurso.innerHTML = iconSvg('trash', 15);
-    btnDelCurso.title = 'Eliminar curso';
-    btnDelCurso.addEventListener('click', () => {
-      if (!confirm('¿Eliminar "' + curso.nombre + '" y todas sus notas?')) return;
-      cursos = cursos.filter(c => c.id !== curso.id);
-      guardarCursos(cursos);
-      render();
-    });
-    const headRight = document.createElement('div');
-    headRight.style.display = 'flex';
-    headRight.style.alignItems = 'center';
-    headRight.style.gap = '10px';
-    headRight.append(metaField, btnDelCurso);
-    head.append(h2, headRight);
-    card.appendChild(head);
-
-    if (curso.items.length > 0) {
-      const table = document.createElement('table');
-      const thead = document.createElement('thead');
-      const trh = document.createElement('tr');
-      trh.append(celda('th', 'Actividad'), celda('th', 'Nota', 'num'), celda('th', '%', 'num'), celda('th', ''));
-      thead.appendChild(trh);
-      table.appendChild(thead);
-
-      const tbody = document.createElement('tbody');
-      curso.items.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.append(
-          celda('td', item.nombre),
-          celda('td', item.nota.toFixed(1), 'num'),
-          celda('td', item.pct + '%', 'num')
-        );
-        const tdAcc = celda('td', undefined, 'acciones');
-        const btnDel = document.createElement('button');
-        btnDel.className = 'btn-icon';
-        btnDel.innerHTML = iconSvg('trash', 13);
-        btnDel.title = 'Eliminar';
-        btnDel.addEventListener('click', () => {
-          curso.items = curso.items.filter(i => i.id !== item.id);
-          guardarCursos(cursos);
-          render();
-        });
-        tdAcc.appendChild(btnDel);
-        tr.appendChild(tdAcc);
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-      card.appendChild(table);
-    }
-
-    // Formulario para agregar actividad
-    const form = document.createElement('div');
-    form.className = 'row';
-    form.style.marginBottom = '14px';
-
-    const fNombre = document.createElement('div');
-    fNombre.className = 'field';
-    fNombre.style.flex = '1 1 160px';
-    fNombre.innerHTML = '<label>Actividad</label>';
-    const iNombre = document.createElement('input');
-    iNombre.type = 'text';
-    iNombre.placeholder = 'Ej. Taller 2';
-    fNombre.appendChild(iNombre);
-
-    const fNota = document.createElement('div');
-    fNota.className = 'field';
-    fNota.style.flex = '0 0 80px';
-    fNota.innerHTML = '<label>Nota</label>';
-    const iNota = document.createElement('input');
-    iNota.type = 'number'; iNota.min = '0'; iNota.max = '5'; iNota.step = '0.1';
-    fNota.appendChild(iNota);
-
-    const fPct = document.createElement('div');
-    fPct.className = 'field';
-    fPct.style.flex = '0 0 80px';
-    fPct.innerHTML = '<label>%</label>';
-    const iPct = document.createElement('input');
-    iPct.type = 'number'; iPct.min = '0'; iPct.max = '100'; iPct.step = '1';
-    fPct.appendChild(iPct);
-
-    const btnAdd = document.createElement('button');
-    btnAdd.className = 'btn-ghost';
-    btnAdd.innerHTML = iconSvg('plus', 14) + 'Agregar';
-    btnAdd.addEventListener('click', () => {
-      const nombre = iNombre.value.trim();
-      const nota = parseFloat(iNota.value);
-      const pct = parseFloat(iPct.value);
-      if (!nombre || isNaN(nota) || isNaN(pct)) {
-        alert('Completá actividad, nota y porcentaje.');
-        return;
-      }
-      curso.items.push({ id: nuevoId(), nombre, nota, pct });
-      guardarCursos(cursos);
-      render();
-    });
-
-    form.append(fNombre, fNota, fPct, btnAdd);
-    card.appendChild(form);
-
-    // Resumen
-    const pctUsado = curso.items.reduce((s, i) => s + i.pct, 0);
-    const acumulado = curso.items.reduce((s, i) => s + i.nota * i.pct / 100, 0);
-    const pctRestante = 100 - pctUsado;
-
-    const resumen = document.createElement('div');
-    resumen.className = 'resumen';
-
-    function stat(label, valor, cls) {
-      const div = document.createElement('div');
-      div.className = 'stat' + (cls ? ' ' + cls : '');
-      div.appendChild(document.createTextNode(label));
-      const b = document.createElement('b');
-      b.textContent = valor;
-      div.appendChild(b);
-      return div;
-    }
-
-    resumen.appendChild(stat('% usado', pctUsado.toFixed(0) + '%', pctUsado > 100 ? 'warn' : ''));
-    resumen.appendChild(stat('Acumulado', acumulado.toFixed(2)));
-
-    if (pctUsado > 100) {
-      resumen.appendChild(stat('Atención', 'suma > 100%', 'warn'));
-    } else if (pctRestante <= 0) {
-      resumen.appendChild(stat('Nota final', acumulado.toFixed(2), acumulado >= curso.meta ? 'good' : 'warn'));
-    } else {
-      const necesaria = (curso.meta - acumulado) * 100 / pctRestante;
-      if (necesaria <= 0) {
-        resumen.appendChild(stat('Meta (' + curso.meta.toFixed(1) + ')', 'asegurada', 'good'));
-      } else if (necesaria > 5) {
-        resumen.appendChild(stat('Necesitás en el ' + pctRestante.toFixed(0) + '% restante', 'no alcanza (>5.0)', 'warn'));
-      } else {
-        resumen.appendChild(stat('Necesitás en el ' + pctRestante.toFixed(0) + '% restante', necesaria.toFixed(2)));
-      }
-    }
-
-    card.appendChild(resumen);
-    cursosBox.appendChild(card);
-  });
+  materias.forEach(materia => materiasBox.appendChild(buildMateriaCard(materia)));
 }
 
-document.getElementById('btnAgregarCurso').addEventListener('click', () => {
-  const input = document.getElementById('nombreCurso');
+function buildCorteBlock(materia, corte) {
+  const wrap = document.createElement('div');
+  wrap.className = 'corte';
+
+  const head = document.createElement('div');
+  head.className = 'corte-head';
+  const h3 = celda('h3', corte.nombre);
+
+  const headRight = document.createElement('div');
+  headRight.className = 'corte-head-right';
+
+  const pesoField = document.createElement('div');
+  pesoField.className = 'peso-field';
+  pesoField.appendChild(document.createTextNode('Peso'));
+  const pesoInput = document.createElement('input');
+  pesoInput.type = 'number';
+  pesoInput.min = '0'; pesoInput.max = '100'; pesoInput.step = '1';
+  pesoInput.value = corte.pct;
+  pesoInput.addEventListener('change', () => {
+    corte.pct = parseFloat(pesoInput.value) || 0;
+    guardarMaterias(materias);
+    render();
+  });
+  pesoField.append(pesoInput, document.createTextNode('%'));
+
+  const btnDelCorte = document.createElement('button');
+  btnDelCorte.className = 'btn-icon';
+  btnDelCorte.innerHTML = iconSvg('trash', 14);
+  btnDelCorte.title = 'Eliminar corte';
+  btnDelCorte.addEventListener('click', () => {
+    if (!confirm('¿Eliminar "' + corte.nombre + '" y sus actividades?')) return;
+    materia.cortes = materia.cortes.filter(c => c.id !== corte.id);
+    guardarMaterias(materias);
+    render();
+  });
+
+  headRight.append(pesoField, btnDelCorte);
+  head.append(h3, headRight);
+  wrap.appendChild(head);
+
+  if (corte.items.length > 0) {
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const trh = document.createElement('tr');
+    trh.append(celda('th', 'Actividad'), celda('th', 'Nota', 'num'), celda('th', '%', 'num'), celda('th', ''));
+    thead.appendChild(trh);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    corte.items.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.append(
+        celda('td', item.nombre),
+        celda('td', item.nota.toFixed(1), 'num'),
+        celda('td', item.pct + '%', 'num')
+      );
+      const tdAcc = celda('td', undefined, 'acciones');
+      const btnDel = document.createElement('button');
+      btnDel.className = 'btn-icon';
+      btnDel.innerHTML = iconSvg('trash', 13);
+      btnDel.title = 'Eliminar';
+      btnDel.addEventListener('click', () => {
+        corte.items = corte.items.filter(i => i.id !== item.id);
+        guardarMaterias(materias);
+        render();
+      });
+      tdAcc.appendChild(btnDel);
+      tr.appendChild(tdAcc);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  // Formulario para agregar actividad dentro del corte
+  const form = document.createElement('div');
+  form.className = 'row';
+  form.style.marginBottom = '4px';
+
+  const fNombre = document.createElement('div');
+  fNombre.className = 'field';
+  fNombre.style.flex = '1 1 160px';
+  fNombre.innerHTML = '<label>Actividad</label>';
+  const iNombre = document.createElement('input');
+  iNombre.type = 'text';
+  iNombre.placeholder = 'Ej. Taller 2';
+  fNombre.appendChild(iNombre);
+
+  const fNota = document.createElement('div');
+  fNota.className = 'field';
+  fNota.style.flex = '0 0 80px';
+  fNota.innerHTML = '<label>Nota</label>';
+  const iNota = document.createElement('input');
+  iNota.type = 'number'; iNota.min = '0'; iNota.max = '5'; iNota.step = '0.1';
+  fNota.appendChild(iNota);
+
+  const fPct = document.createElement('div');
+  fPct.className = 'field';
+  fPct.style.flex = '0 0 80px';
+  fPct.innerHTML = '<label>%</label>';
+  const iPct = document.createElement('input');
+  iPct.type = 'number'; iPct.min = '0'; iPct.max = '100'; iPct.step = '1';
+  fPct.appendChild(iPct);
+
+  const btnAdd = document.createElement('button');
+  btnAdd.className = 'btn-ghost';
+  btnAdd.innerHTML = iconSvg('plus', 14) + 'Agregar';
+  btnAdd.addEventListener('click', () => {
+    const nombre = iNombre.value.trim();
+    const nota = parseFloat(iNota.value);
+    const pct = parseFloat(iPct.value);
+    if (!nombre || isNaN(nota) || isNaN(pct)) {
+      alert('Completá actividad, nota y porcentaje.');
+      return;
+    }
+    corte.items.push({ id: nuevoId(), nombre, nota, pct });
+    guardarMaterias(materias);
+    render();
+  });
+
+  form.append(fNombre, fNota, fPct, btnAdd);
+  wrap.appendChild(form);
+
+  const { pctUsado, acumulado } = resumenPonderado(corte.items, i => i.nota);
+  const corteResumen = document.createElement('div');
+  corteResumen.className = 'corte-resumen';
+  const s1 = document.createElement('span');
+  s1.append('% usado: ', celda('b', pctUsado.toFixed(0) + '%'));
+  const s2 = document.createElement('span');
+  s2.append('Promedio del corte: ', celda('b', acumulado.toFixed(2)));
+  corteResumen.append(s1, s2);
+  wrap.appendChild(corteResumen);
+
+  return wrap;
+}
+
+function buildMateriaCard(materia) {
+  const card = document.createElement('div');
+  card.className = 'card materia';
+
+  const head = document.createElement('div');
+  head.className = 'materia-head';
+  const h2 = celda('h2', materia.nombre);
+
+  const metaField = document.createElement('div');
+  metaField.className = 'meta-field';
+  metaField.appendChild(document.createTextNode('Meta '));
+  const metaInput = document.createElement('input');
+  metaInput.type = 'number';
+  metaInput.min = '0'; metaInput.max = '5'; metaInput.step = '0.1';
+  metaInput.value = materia.meta;
+  metaInput.addEventListener('change', () => {
+    materia.meta = parseFloat(metaInput.value) || 3.0;
+    guardarMaterias(materias);
+    render();
+  });
+  metaField.appendChild(metaInput);
+
+  const btnDelMateria = document.createElement('button');
+  btnDelMateria.className = 'btn-icon';
+  btnDelMateria.innerHTML = iconSvg('trash', 15);
+  btnDelMateria.title = 'Eliminar materia';
+  btnDelMateria.addEventListener('click', () => {
+    if (!confirm('¿Eliminar "' + materia.nombre + '" y todos sus cortes?')) return;
+    materias = materias.filter(m => m.id !== materia.id);
+    guardarMaterias(materias);
+    render();
+  });
+
+  const headRight = document.createElement('div');
+  headRight.className = 'materia-head-right';
+  headRight.append(metaField, btnDelMateria);
+  head.append(h2, headRight);
+  card.appendChild(head);
+
+  materia.cortes.forEach(corte => card.appendChild(buildCorteBlock(materia, corte)));
+
+  // Formulario para agregar un corte nuevo
+  const addCorteRow = document.createElement('div');
+  addCorteRow.className = 'row add-corte-row';
+
+  const fNombreCorte = document.createElement('div');
+  fNombreCorte.className = 'field';
+  fNombreCorte.style.flex = '1 1 160px';
+  fNombreCorte.innerHTML = '<label>Nuevo corte</label>';
+  const iNombreCorte = document.createElement('input');
+  iNombreCorte.type = 'text';
+  iNombreCorte.placeholder = 'Ej. Corte 2';
+  fNombreCorte.appendChild(iNombreCorte);
+
+  const fPesoCorte = document.createElement('div');
+  fPesoCorte.className = 'field';
+  fPesoCorte.style.flex = '0 0 90px';
+  fPesoCorte.innerHTML = '<label>Peso %</label>';
+  const iPesoCorte = document.createElement('input');
+  iPesoCorte.type = 'number'; iPesoCorte.min = '0'; iPesoCorte.max = '100'; iPesoCorte.step = '1';
+  fPesoCorte.appendChild(iPesoCorte);
+
+  const btnAddCorte = document.createElement('button');
+  btnAddCorte.className = 'btn-ghost';
+  btnAddCorte.innerHTML = iconSvg('plus', 14) + 'Agregar corte';
+  btnAddCorte.addEventListener('click', () => {
+    const nombre = iNombreCorte.value.trim();
+    const pct = parseFloat(iPesoCorte.value);
+    if (!nombre || isNaN(pct)) {
+      alert('Completá el nombre y el peso (%) del corte.');
+      return;
+    }
+    materia.cortes.push({ id: nuevoId(), nombre, pct, items: [] });
+    guardarMaterias(materias);
+    render();
+  });
+
+  addCorteRow.append(fNombreCorte, fPesoCorte, btnAddCorte);
+  card.appendChild(addCorteRow);
+
+  // Resumen a nivel materia: cada corte pesa según su % dentro del 100% final.
+  const entradasCortes = materia.cortes.map(c => ({ pct: c.pct, nota: resumenPonderado(c.items, i => i.nota).acumulado }));
+  const { pctUsado, acumulado } = resumenPonderado(entradasCortes, e => e.nota);
+  const pctRestante = 100 - pctUsado;
+
+  const resumen = document.createElement('div');
+  resumen.className = 'resumen';
+  resumen.appendChild(stat('% usado (cortes)', pctUsado.toFixed(0) + '%', pctUsado > 100 ? 'warn' : ''));
+  resumen.appendChild(stat('Acumulado', acumulado.toFixed(2)));
+
+  if (materia.cortes.length === 0) {
+    resumen.appendChild(stat('Cortes', 'agregá al menos uno'));
+  } else if (pctUsado > 100) {
+    resumen.appendChild(stat('Atención', 'suma de pesos > 100%', 'warn'));
+  } else if (pctRestante <= 0) {
+    resumen.appendChild(stat('Nota final', acumulado.toFixed(2), acumulado >= materia.meta ? 'good' : 'warn'));
+  } else {
+    const necesaria = (materia.meta - acumulado) * 100 / pctRestante;
+    if (necesaria <= 0) {
+      resumen.appendChild(stat('Meta (' + materia.meta.toFixed(1) + ')', 'asegurada', 'good'));
+    } else if (necesaria > 5) {
+      resumen.appendChild(stat('Necesitás en el ' + pctRestante.toFixed(0) + '% restante', 'no alcanza (>5.0)', 'warn'));
+    } else {
+      resumen.appendChild(stat('Necesitás en el ' + pctRestante.toFixed(0) + '% restante', necesaria.toFixed(2)));
+    }
+  }
+
+  card.appendChild(resumen);
+  return card;
+}
+
+document.getElementById('btnAgregarMateria').addEventListener('click', () => {
+  const input = document.getElementById('nombreMateria');
   const nombre = input.value.trim();
-  if (!nombre) { alert('Ingresá el nombre del curso.'); return; }
-  cursos.push({ id: nuevoId(), nombre, meta: 3.0, items: [] });
-  guardarCursos(cursos);
+  if (!nombre) { alert('Ingresá el nombre de la materia.'); return; }
+  materias.push({ id: nuevoId(), nombre, meta: 3.0, cortes: [] });
+  guardarMaterias(materias);
   input.value = '';
   render();
 });
@@ -334,8 +472,8 @@ btnTheme.addEventListener('click', () => {
 });
 
 protegerPagina((user) => {
-  cursosSync = syncDoc(user.uid, 'notas_cursos', 'cursos', (valor) => {
-    cursos = valor;
+  materiasSync = syncDoc(user.uid, 'notas_cursos', 'cursos', (valor) => {
+    materias = migrar(valor);
     render();
   });
 });
